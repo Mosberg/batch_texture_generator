@@ -11,3 +11,5 @@
 ---
 
 ## Remote indexing:
+
+- Use [Remote Index](REMOTE-INDEX.md) for large codebases.
