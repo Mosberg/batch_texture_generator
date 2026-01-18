@@ -1,0 +1,31 @@
+{
+  "$schema": "../../schemas/texture-palettes.schema.json",
+  "schema": "texture-palettes",
+  "version": 1,
+  "generator": {
+    "name": "btg",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "id": "warped",
+      "name": "Warped",
+      "path": "textures/wood/warped.png",
+      "material": "wood",
+      "groups": {
+        "base": {
+          "comment": "Extracted from textures/wood/warped.png",
+          "colors": [
+            "#113835ff",
+            "#1e4340ff",
+            "#1f5752ff",
+            "#287067ff",
+            "#2e5f51ff",
+            "#398382ff",
+            "#3a8e8cff"
+          ]
+        }
+      }
+    }
+  ]
+}

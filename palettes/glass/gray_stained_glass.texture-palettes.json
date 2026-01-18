@@ -8,18 +8,17 @@
   },
   "items": [
     {
-      "id": "glass",
-      "name": "Glass",
-      "path": "textures/glass/glass.png",
+      "id": "gray_stained_glass",
+      "name": "Gray Stained Glass",
+      "path": "textures/glass/gray_stained_glass.png",
       "material": "glass",
       "groups": {
         "base": {
-          "comment": "Extracted from textures/glass/glass.png",
+          "comment": "Extracted from textures/glass/gray_stained_glass.png",
           "colors": [
-            "#7baeb7ff",
-            "#8bc1cdff",
-            "#a8d0d9ff",
-            "#d0eae9ff"
+            "#4c4c4c66",
+            "#4c4c4c9b",
+            "#4c4c4ca3"
           ]
         }
       }

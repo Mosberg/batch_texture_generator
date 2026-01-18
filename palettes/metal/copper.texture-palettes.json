@@ -1,0 +1,32 @@
+{
+  "$schema": "../../schemas/texture-palettes.schema.json",
+  "schema": "texture-palettes",
+  "version": 1,
+  "generator": {
+    "name": "btg",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "id": "copper",
+      "name": "Copper",
+      "path": "textures/metal/copper.png",
+      "material": "metal",
+      "groups": {
+        "base": {
+          "comment": "Extracted from textures/metal/copper.png",
+          "colors": [
+            "#904931ff",
+            "#9a5038ff",
+            "#a75a40ff",
+            "#b26247ff",
+            "#c26b4cff",
+            "#c87456ff",
+            "#d67b5bff",
+            "#e3826cff"
+          ]
+        }
+      }
+    }
+  ]
+}

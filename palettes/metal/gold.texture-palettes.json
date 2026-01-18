@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schemas/texture-palettes.schema.json",
+  "schema": "texture-palettes",
+  "version": 1,
+  "generator": {
+    "name": "btg",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "id": "gold",
+      "name": "Gold",
+      "path": "textures/metal/gold.png",
+      "material": "metal",
+      "groups": {
+        "base": {
+          "comment": "Extracted from textures/metal/gold.png",
+          "colors": [
+            "#cc8e27ff",
+            "#d39632ff",
+            "#f5cc27ff",
+            "#f9bd23ff",
+            "#fee048ff",
+            "#feffbdff",
+            "#ffd83eff",
+            "#ffec4fff",
+            "#fffd90ff"
+          ]
+        }
+      }
+    }
+  ]
+}

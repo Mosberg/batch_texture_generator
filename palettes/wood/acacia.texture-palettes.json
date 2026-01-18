@@ -1,0 +1,31 @@
+{
+  "$schema": "../../schemas/texture-palettes.schema.json",
+  "schema": "texture-palettes",
+  "version": 1,
+  "generator": {
+    "name": "btg",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "id": "acacia",
+      "name": "Acacia",
+      "path": "textures/wood/acacia.png",
+      "material": "wood",
+      "groups": {
+        "base": {
+          "comment": "Extracted from textures/wood/acacia.png",
+          "colors": [
+            "#884728ff",
+            "#8f4c2aff",
+            "#99502bff",
+            "#a05630ff",
+            "#ad5d32ff",
+            "#ba6337ff",
+            "#c26d3fff"
+          ]
+        }
+      }
+    }
+  ]
+}

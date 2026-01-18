@@ -2,6 +2,10 @@
   "$schema": "../../schemas/texture-palettes.schema.json",
   "schema": "texture-palettes",
   "version": 1,
+  "generator": {
+    "name": "btg",
+    "version": "1.0.0"
+  },
   "items": [
     {
       "id": "iron",
@@ -10,7 +14,7 @@
       "material": "metal",
       "groups": {
         "base": {
-          "comment": "Neutral iron ramp from darker to lighter.",
+          "comment": "Extracted from textures/metal/iron.png",
           "colors": [
             "#b1b0b0ff",
             "#b9b9b9ff",

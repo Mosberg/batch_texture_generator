@@ -1,0 +1,31 @@
+{
+  "$schema": "../../schemas/texture-palettes.schema.json",
+  "schema": "texture-palettes",
+  "version": 1,
+  "generator": {
+    "name": "btg",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "id": "spruce",
+      "name": "Spruce",
+      "path": "textures/wood/spruce.png",
+      "material": "wood",
+      "groups": {
+        "base": {
+          "comment": "Extracted from textures/wood/spruce.png",
+          "colors": [
+            "#553a1fff",
+            "#5a4424ff",
+            "#614b2eff",
+            "#70522eff",
+            "#7a5a34ff",
+            "#82613aff",
+            "#886539ff"
+          ]
+        }
+      }
+    }
+  ]
+}

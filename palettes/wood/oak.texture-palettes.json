@@ -2,6 +2,10 @@
   "$schema": "../../schemas/texture-palettes.schema.json",
   "schema": "texture-palettes",
   "version": 1,
+  "generator": {
+    "name": "btg",
+    "version": "1.0.0"
+  },
   "items": [
     {
       "id": "oak",
@@ -10,7 +14,7 @@
       "material": "wood",
       "groups": {
         "base": {
-          "comment": "Oak ramp from darker grain to lighter highlights.",
+          "comment": "Extracted from textures/wood/oak.png",
           "colors": [
             "#67502cff",
             "#7e6237ff",

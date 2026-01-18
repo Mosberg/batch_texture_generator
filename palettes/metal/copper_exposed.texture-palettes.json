@@ -1,0 +1,32 @@
+{
+  "$schema": "../../schemas/texture-palettes.schema.json",
+  "schema": "texture-palettes",
+  "version": 1,
+  "generator": {
+    "name": "btg",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "id": "copper_exposed",
+      "name": "Copper Exposed",
+      "path": "textures/metal/copper_exposed.png",
+      "material": "metal",
+      "groups": {
+        "base": {
+          "comment": "Extracted from textures/metal/copper_exposed.png",
+          "colors": [
+            "#796454ff",
+            "#7a9869ff",
+            "#7f7257ff",
+            "#947661ff",
+            "#988c69ff",
+            "#a87762ff",
+            "#ba8277ff",
+            "#ce8d83ff"
+          ]
+        }
+      }
+    }
+  ]
+}

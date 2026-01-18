@@ -1,0 +1,31 @@
+{
+  "$schema": "../../schemas/texture-palettes.schema.json",
+  "schema": "texture-palettes",
+  "version": 1,
+  "generator": {
+    "name": "btg",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "id": "dark_oak",
+      "name": "Dark Oak",
+      "path": "textures/wood/dark_oak.png",
+      "material": "wood",
+      "groups": {
+        "base": {
+          "comment": "Extracted from textures/wood/dark_oak.png",
+          "colors": [
+            "#291a0cff",
+            "#301e0eff",
+            "#3a2411ff",
+            "#3e2912ff",
+            "#492f17ff",
+            "#4f3218ff",
+            "#53381aff"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "../schemas/texture-palettes.schema.json",
+  "schema": "texture-palettes",
+  "version": 1,
+  "generator": {
+    "name": "btg",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "id": "small_flask",
+      "name": "Small Flask",
+      "path": "textures/textures_input/small_flask.png",
+      "material": "glass",
+      "groups": {
+        "base": {
+          "comment": "Extracted from D:/Python/batch_texture_generator/textures_input/small_flask.png",
+          "colors": ["#7baeb7ff", "#8bc1cdff", "#a8d0d9ff", "#d0eae9ff"]
+        }
+      },
+      "material": "wood",
+      "groups": {
+        "base": {
+          "comment": "Extracted from D:/Python/batch_texture_generator/textures_input/small_flask.png",
+          "colors": ["#67502cff", "#7e6237ff", "#967441ff"]
+        }
+      }
+    }
+  ]
+}

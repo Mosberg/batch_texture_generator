@@ -1,0 +1,31 @@
+{
+  "$schema": "../../schemas/texture-palettes.schema.json",
+  "schema": "texture-palettes",
+  "version": 1,
+  "generator": {
+    "name": "btg",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "id": "birch",
+      "name": "Birch",
+      "path": "textures/wood/birch.png",
+      "material": "wood",
+      "groups": {
+        "base": {
+          "comment": "Extracted from textures/wood/birch.png",
+          "colors": [
+            "#9e8b61ff",
+            "#a59467ff",
+            "#ae9f76ff",
+            "#b8a875ff",
+            "#c8b77aff",
+            "#d7c185ff",
+            "#d7cb8dff"
+          ]
+        }
+      }
+    }
+  ]
+}

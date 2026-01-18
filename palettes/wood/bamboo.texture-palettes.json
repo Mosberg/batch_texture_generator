@@ -1,0 +1,34 @@
+{
+  "$schema": "../../schemas/texture-palettes.schema.json",
+  "schema": "texture-palettes",
+  "version": 1,
+  "generator": {
+    "name": "btg",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "id": "bamboo",
+      "name": "Bamboo",
+      "path": "textures/wood/bamboo.png",
+      "material": "wood",
+      "groups": {
+        "base": {
+          "comment": "Extracted from textures/wood/bamboo.png",
+          "colors": [
+            "#907e3aff",
+            "#998741ff",
+            "#b7ab49ff",
+            "#bba84cff",
+            "#c2b54eff",
+            "#c8b14dff",
+            "#d3bb50ff",
+            "#d9c25eff",
+            "#e3cc6aff",
+            "#efd97eff"
+          ]
+        }
+      }
+    }
+  ]
+}

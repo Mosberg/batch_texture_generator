@@ -1,0 +1,31 @@
+{
+  "$schema": "../../schemas/texture-palettes.schema.json",
+  "schema": "texture-palettes",
+  "version": 1,
+  "generator": {
+    "name": "btg",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "id": "cherry",
+      "name": "Cherry",
+      "path": "textures/wood/cherry.png",
+      "material": "wood",
+      "groups": {
+        "base": {
+          "comment": "Extracted from textures/wood/cherry.png",
+          "colors": [
+            "#cd8580ff",
+            "#dd9d97ff",
+            "#e1a8a1ff",
+            "#e6b3adff",
+            "#e7bab4ff",
+            "#e7c2bbff",
+            "#e7cac5ff"
+          ]
+        }
+      }
+    }
+  ]
+}

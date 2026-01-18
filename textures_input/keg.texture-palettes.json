@@ -1,0 +1,29 @@
+{
+  "$schema": "../schemas/texture-palettes.schema.json",
+  "schema": "texture-palettes",
+  "version": 1,
+  "generator": {
+    "name": "btg",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "id": "keg",
+      "name": "Keg",
+      "path": "textures/textures_input/keg.png",
+      "material": "metal",
+      "groups": {
+        "base": {
+          "comment": "Extracted from D:/Python/batch_texture_generator/textures_input/keg.png",
+          "colors": [
+            "#b1b0b0ff",
+            "#b9b9b9ff",
+            "#c1c1c1ff",
+            "#d1cfcfff",
+            "#d6d6d6ff"
+          ]
+        }
+      }
+    }
+  ]
+}

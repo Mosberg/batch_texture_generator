@@ -1,0 +1,31 @@
+{
+  "$schema": "../../schemas/texture-palettes.schema.json",
+  "schema": "texture-palettes",
+  "version": 1,
+  "generator": {
+    "name": "btg",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "id": "pale_oak",
+      "name": "Pale Oak",
+      "path": "textures/wood/pale_oak.png",
+      "material": "wood",
+      "groups": {
+        "base": {
+          "comment": "Extracted from textures/wood/pale_oak.png",
+          "colors": [
+            "#c0b2b2ff",
+            "#c7b8b8ff",
+            "#d2c6c7ff",
+            "#ddcecdff",
+            "#e7e3e1ff",
+            "#faefeeff",
+            "#fffbf8ff"
+          ]
+        }
+      }
+    }
+  ]
+}

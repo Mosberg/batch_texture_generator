@@ -1,0 +1,31 @@
+{
+  "$schema": "../../schemas/texture-palettes.schema.json",
+  "schema": "texture-palettes",
+  "version": 1,
+  "generator": {
+    "name": "btg",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "id": "jungle",
+      "name": "Jungle",
+      "path": "textures/wood/jungle.png",
+      "material": "wood",
+      "groups": {
+        "base": {
+          "comment": "Extracted from textures/wood/jungle.png",
+          "colors": [
+            "#68462fff",
+            "#785437ff",
+            "#976a44ff",
+            "#9f714aff",
+            "#aa7954ff",
+            "#b88764ff",
+            "#bf8e6bff"
+          ]
+        }
+      }
+    }
+  ]
+}

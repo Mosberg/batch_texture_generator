@@ -1,0 +1,32 @@
+{
+  "$schema": "../../schemas/texture-palettes.schema.json",
+  "schema": "texture-palettes",
+  "version": 1,
+  "generator": {
+    "name": "btg",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "id": "copper_oxidized",
+      "name": "Copper Oxidized",
+      "path": "textures/metal/copper_oxidized.png",
+      "material": "metal",
+      "groups": {
+        "base": {
+          "comment": "Extracted from textures/metal/copper_oxidized.png",
+          "colors": [
+            "#396e59ff",
+            "#3b6655ff",
+            "#3e816bff",
+            "#4c9484ff",
+            "#4fab90ff",
+            "#53a178ff",
+            "#59b292ff",
+            "#6ec59fff"
+          ]
+        }
+      }
+    }
+  ]
+}

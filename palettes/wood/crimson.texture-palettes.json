@@ -1,0 +1,31 @@
+{
+  "$schema": "../../schemas/texture-palettes.schema.json",
+  "schema": "texture-palettes",
+  "version": 1,
+  "generator": {
+    "name": "btg",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "id": "crimson",
+      "name": "Crimson",
+      "path": "textures/wood/crimson.png",
+      "material": "wood",
+      "groups": {
+        "base": {
+          "comment": "Extracted from textures/wood/crimson.png",
+          "colors": [
+            "#3f1e2dff",
+            "#442131ff",
+            "#4b2737ff",
+            "#5c3042ff",
+            "#6a344bff",
+            "#7e3a56ff",
+            "#863e5aff"
+          ]
+        }
+      }
+    }
+  ]
+}

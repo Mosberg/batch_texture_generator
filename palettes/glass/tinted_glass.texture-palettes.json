@@ -8,18 +8,19 @@
   },
   "items": [
     {
-      "id": "glass",
-      "name": "Glass",
-      "path": "textures/glass/glass.png",
+      "id": "tinted_glass",
+      "name": "Tinted Glass",
+      "path": "textures/glass/tinted_glass.png",
       "material": "glass",
       "groups": {
         "base": {
-          "comment": "Extracted from textures/glass/glass.png",
+          "comment": "Extracted from textures/glass/tinted_glass.png",
           "colors": [
-            "#7baeb7ff",
-            "#8bc1cdff",
-            "#a8d0d9ff",
-            "#d0eae9ff"
+            "#2725286e",
+            "#28182ec8",
+            "#2b2030c8",
+            "#35283bc8",
+            "#49464a6e"
           ]
         }
       }

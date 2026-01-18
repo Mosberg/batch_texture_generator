@@ -1,0 +1,31 @@
+{
+  "$schema": "../../schemas/texture-palettes.schema.json",
+  "schema": "texture-palettes",
+  "version": 1,
+  "generator": {
+    "name": "btg",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "id": "mangrove",
+      "name": "Mangrove",
+      "path": "textures/wood/mangrove.png",
+      "material": "wood",
+      "groups": {
+        "base": {
+          "comment": "Extracted from textures/wood/mangrove.png",
+          "colors": [
+            "#5d1c1eff",
+            "#642423ff",
+            "#6f2a2dff",
+            "#753136ff",
+            "#773934ff",
+            "#7f4234ff",
+            "#8b4d3aff"
+          ]
+        }
+      }
+    }
+  ]
+}
