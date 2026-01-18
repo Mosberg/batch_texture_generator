@@ -12,13 +12,13 @@
         "base": {
           "comment": "Oak ramp from darker grain to lighter highlights.",
           "colors": [
-            "#67502c",
-            "#7e6237",
-            "#967441",
-            "#9f844d",
-            "#af8f55",
-            "#b8945f",
-            "#c29d62"
+            "#67502cff",
+            "#7e6237ff",
+            "#967441ff",
+            "#9f844dff",
+            "#af8f55ff",
+            "#b8945fff",
+            "#c29d62ff"
           ]
         }
       }

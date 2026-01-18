@@ -11,7 +11,13 @@
       "groups": {
         "base": {
           "comment": "Base palette for vanilla glass-like recolors.",
-          "colors": ["#000000", "#7baeb7", "#8bc1cd", "#a8d0d9", "#d0eae9"]
+          "colors": [
+            "#000000ff",
+            "#7baeb7ff",
+            "#8bc1cdff",
+            "#a8d0d9ff",
+            "#d0eae9ff"
+          ]
         }
       }
     }

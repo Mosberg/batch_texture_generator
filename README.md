@@ -1,24 +1,47 @@
 # Batch Texture Generator
 
-## Usage
+## Setup
 
-# Validate all palette JSON files
+```bash
+python -m venv .btg
+.btg\Scripts\python.exe -m pip install -r requirements.txt
+```
+
+## Commands
+
+### 1) Normalize palettes to RGBA
+
+Converts any `#RRGGBB` colors to `#RRGGBBff` and normalizes casing.
+
+```bash
+python tools/btg.py normalize
+```
+
+### 2) Validate palettes
 
 ```bash
 python tools/btg.py validate
 ```
 
-# Extract palettes from textures/_/_.png
+### 3) Extract RGBA palettes from textures/
 
 ```bash
-python tools/btg.py extract --max-colors 32 --method quantize
+python tools/btg.py extract --max-colors 32
 ```
 
-# Recolor everything in textures_input/ from oak->iron using group "base"
+### 4) Recolor textures_input/ using palette swap
 
 ```bash
-python tools/btg.py recolor --src-palette wood/oak.texture-palettes.json --src-id oak --dst-palette metal/iron.texture-palettes.json --dst-id iron
+python tools/btg.py recolor ^
+  --src-palette wood/oak.texture-palettes.json --src-id oak ^
+  --dst-palette metal/iron.texture-palettes.json --dst-id iron ^
+  --output textures_output
 ```
+
+## Notes
+
+- Palettes must use 8-digit RGBA hex: `#RRGGBBAA`.
+- Schemas live in `schemas/` and are mapped in `.vscode/settings.json`.
 
 ## Project Structure
 
