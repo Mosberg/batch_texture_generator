@@ -53,12 +53,46 @@ batch_texture_generator/               # Root directory
 ├─ .vscode/
 │  └─ settings.json                    # VSCode settings
 ├─ palettes/                           # JSON palette directory
-│  ├─ glass/
-│  │  └─ glass.texture-palettes.json
-│  ├─ metal/
-│  │  └─ iron.texture-palettes.json
-│  └─ wood/
-│     └─ oak.texture-palettes.json
+│  ├─ glass
+│  │  ├─ black_stained_glass.texture-palettes.json
+│  │  ├─ blue_stained_glass.texture-palettes.json
+│  │  ├─ brown_stained_glass.texture-palettes.json
+│  │  ├─ cyan_stained_glass.texture-palettes.json
+│  │  ├─ glass.texture-palettes.json
+│  │  ├─ gray_stained_glass.texture-palettes.json
+│  │  ├─ green_stained_glass.texture-palettes.json
+│  │  ├─ light_blue_stained_glass.texture-palettes.json
+│  │  ├─ light_gray_stained_glass.texture-palettes.json
+│  │  ├─ lime_stained_glass.texture-palettes.json
+│  │  ├─ magenta_stained_glass.texture-palettes.json
+│  │  ├─ orange_stained_glass.texture-palettes.json
+│  │  ├─ pink_stained_glass.texture-palettes.json
+│  │  ├─ purple_stained_glass.texture-palettes.json
+│  │  ├─ red_stained_glass.texture-palettes.json
+│  │  ├─ tinted_glass.texture-palettes.json
+│  │  ├─ white_stained_glass.texture-palettes.json
+│  │  └─ yellow_stained_glass.texture-palettes.json
+│  ├─ metal
+│  │  ├─ copper.texture-palettes.json
+│  │  ├─ copper_exposed.texture-palettes.json
+│  │  ├─ copper_oxidized.texture-palettes.json
+│  │  ├─ copper_weathered.texture-palettes.json
+│  │  ├─ gold.texture-palettes.json
+│  │  ├─ iron.texture-palettes.json
+│  │  └─ netherite.texture-palettes.json
+│  └─ wood
+│     ├─ acacia.texture-palettes.json
+│     ├─ bamboo.texture-palettes.json
+│     ├─ birch.texture-palettes.json
+│     ├─ cherry.texture-palettes.json
+│     ├─ crimson.texture-palettes.json
+│     ├─ dark_oak.texture-palettes.json
+│     ├─ jungle.texture-palettes.json
+│     ├─ mangrove.texture-palettes.json
+│     ├─ oak.texture-palettes.json
+│     ├─ pale_oak.texture-palettes.json
+│     ├─ spruce.texture-palettes.json
+│     └─ warped.texture-palettes.json
 ├─ README.md
 ├─ requirements.txt
 ├─ schemas/                            # JSON schema directory
@@ -106,8 +140,19 @@ batch_texture_generator/               # Root directory
 │     ├─ spruce.png
 │     └─ warped.png
 ├─ textures_input/                     # Texture PNG's which needs recoloring
+│  ├─ barrel.png
+│  ├─ barrel.texture-palettes.json
+│  ├─ big_flask.png
+│  ├─ big_flask.texture-palettes.json
+│  ├─ keg.png
+│  ├─ keg.texture-palettes.json
+│  ├─ medium_flask.png
+│  ├─ medium_flask.texture-palettes.json
+│  ├─ small_flask.png
+│  └─ small_flask.texture-palettes.json
 ├─ textures_output/                    # Texture PNG's which have been recolored
 └─ tools/
-   └─ btg.py                           # Main script for batch texture generation
+   ├─ btg.py                           # Main script for batch texture generation
+   └─ btg_gui.py                       # GUI script for batch texture generation
 
 ```
