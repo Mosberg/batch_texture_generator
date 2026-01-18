@@ -1,0 +1,16 @@
+{
+  "itemGroup.modid.barrels": "Barrels",
+  "itemGroup.modid.kegs": "Kegs",
+  "itemGroup.modid.smallflasks": "Small Flasks",
+  "itemGroup.modid.mediumflasks": "Medium Flasks",
+  "itemGroup.modid.bigflasks": "Big Flasks",
+
+  "block.modid.oak_iron_barrel": "Oak Iron Barrel",
+  "block.modid.iron_keg": "Iron Keg",
+
+  "item.modid.oak_iron_barrel": "Oak Iron Barrel",
+  "item.modid.iron_keg": "Iron Keg",
+  "item.modid.small_oak_glass_flask": "Small Oak Glass Flask",
+  "item.modid.medium_oak_glass_flask": "Medium Oak Glass Flask",
+  "item.modid.big_oak_glass_flask": "Big Oak Glass Flask"
+}

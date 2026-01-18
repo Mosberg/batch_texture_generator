@@ -1,47 +1,52 @@
-# Batch Texture Generator
+# Batch Textures and Assets Generator
 
-## Setup
+**Generate several \*.py modules which all can be controlled from a main script and tkinter gui.**
 
-```bash
-python -m venv .btg
-.btg\Scripts\python.exe -m pip install -r requirements.txt
-```
-
-## Commands
-
-### 1) Normalize palettes to RGBA
-
-Converts any `#RRGGBB` colors to `#RRGGBBff` and normalizes casing.
-
-```bash
-python tools/btg.py normalize
-```
-
-### 2) Validate palettes
-
-```bash
-python tools/btg.py validate
-```
-
-### 3) Extract RGBA palettes from textures/
-
-```bash
-python tools/btg.py extract --max-colors 32
-```
-
-### 4) Recolor textures_input/ using palette swap
-
-```bash
-python tools/btg.py recolor ^
-  --src-palette wood/oak.texture-palettes.json --src-id oak ^
-  --dst-palette metal/iron.texture-palettes.json --dst-id iron ^
-  --output output/modid/textures/item
-```
+- Validate
+  - Check for missing files
+  - Check for incorrect formats
+- Normalize
+  - Resize images
+  - Standardize naming conventions
+- Extract
+  - Pull textures from source files
+  - Separate assets into categories
+- Recolor
+  - Apply color palettes
+  - Generate variations
+- Legacy Templates
+  - Convert old templates to new format
+  - Update metadata
+- Generate
+  - Create new textures based on parameters
+  - Batch process multiple files
+- AutoTemplate
+  - Automatically generate templates from existing assets
+  - Suggest improvements based on asset analysis
+- ItemAssets
+  - Process item-specific textures
+  - Create item previews
+- BlockAssets
+  - Handle block-specific textures
+  - Generate block models and previews
+- GUI
+  - User-friendly interface for batch operations
+  - Real-time progress updates
+- Configuration management
+  - Load and save user settings
+  - Support for multiple configuration profiles
+- Logging and error handling
+  - Detailed logs for each operation
+  - Graceful error recovery
+- Multi-threading support
+  - Parallel processing for faster execution
+  - Efficient resource management
 
 ## Notes
 
 - Palettes must use 8-digit RGBA hex: `#RRGGBBAA`.
 - Schemas live in `schemas/` and are mapped in `.vscode/settings.json`.
+- Input files should be placed in `input/modid/` where `modid` is your mod's identifier.
 
 ## Output
 
@@ -51,7 +56,9 @@ python tools/btg.py recolor ^
 - Language entries are saved to `output/modid/lang/en_us.json`.
 - Block models and blockstates are saved to `output/modid/models/block/` and `output/modid/blockstates/`.
 
-### output/modid/blockstates/
+## Examples
+
+### examples/modid/blockstates/
 
 ```json
 {
@@ -101,7 +108,7 @@ python tools/btg.py recolor ^
 }
 ```
 
-### output/modid/items/
+### examples/modid/items/
 
 ```json
 {
@@ -148,7 +155,7 @@ python tools/btg.py recolor ^
 }
 ```
 
-### output/modid/models/block/
+### examples/modid/models/block/
 
 ```json
 {
@@ -567,7 +574,7 @@ python tools/btg.py recolor ^
   ]
 }```
 
-### output/modid/models/item/
+### examples/modid/models/item/
 
 ```json
 {
@@ -614,7 +621,7 @@ python tools/btg.py recolor ^
 }
 ```
 
-### output/modid/lang/en_us.json
+### examples/modid/lang/en_us.json
 
 ```json
 {
@@ -639,41 +646,84 @@ python tools/btg.py recolor ^
 
 ```
 batch_texture_generator
-├─ output
+├─ examples                                   # Example files demonstrating input and output structure
 │  └─ modid
-│     ├─ blockstates
+│     ├─ blockstates                          # Blockstate JSON files
 │     │  ├─ iron_keg_block.json
 │     │  └─ oak_iron_barrel_block.json
-│     ├─ items
+│     ├─ items                                # Item JSON files
 │     │  ├─ big_oak_glass_flask.json
 │     │  ├─ iron_keg.json
 │     │  ├─ medium_oak_glass_flask.json
 │     │  ├─ oak_iron_barrel.json
 │     │  └─ small_oak_glass_flask.json
-│     ├─ lang
+│     ├─ lang                                 # Language files
 │     │  └─ en_us.json
-│     ├─ models
-│     │  ├─ block
+│     ├─ models                               # Model JSON files
+│     │  ├─ block                             # Block model JSON files
 │     │  │  ├─ iron_keg_block.json
 │     │  │  └─ oak_iron_barrel_block.json
-│     │  └─ item
+│     │  └─ item                              # Item model JSON files
 │     │     ├─ big_oak_glass_flask.json
 │     │     ├─ iron_keg.json
 │     │     ├─ medium_oak_glass_flask.json
 │     │     ├─ oak_iron_barrel.json
 │     │     └─ small_oak_glass_flask.json
-│     └─ textures
-│        ├─ block
+│     └─ textures                             # Texture image files
+│        ├─ block                             # Block texture image files
 │        │  ├─ iron_keg_block.png
 │        │  └─ oak_iron_barrel_block.png
-│        └─ item
+│        └─ item                              # Item texture image files
 │           ├─ big_oak_glass_flask.png
 │           ├─ iron_keg.png
 │           ├─ medium_oak_glass_flask.png
 │           ├─ oak_iron_barrel.png
 │           └─ small_oak_glass_flask.png
-├─ palettes
-│  ├─ glass
+├─ input                                      # Input textures for processing
+│  ├─ block                                   # Block input textures
+│  │  ├─ barrel_block.png
+│  │  └─ keg_block.png
+│  └─ item                                    # Item input textures
+│     ├─ barrel.png
+│     ├─ big_flask.png
+│     ├─ keg.png
+│     ├─ medium_flask.png
+│     └─ small_flask.png
+├─ output                                     # Output files generated after processing
+│  └─ modid
+│     ├─ blockstates                          # Blockstate JSON files
+│     │  ├─ iron_keg_block.json
+│     │  └─ oak_iron_barrel_block.json
+│     ├─ items                                # Item JSON files
+│     │  ├─ big_oak_glass_flask.json
+│     │  ├─ iron_keg.json
+│     │  ├─ medium_oak_glass_flask.json
+│     │  ├─ oak_iron_barrel.json
+│     │  └─ small_oak_glass_flask.json
+│     ├─ lang                                 # Language files
+│     │  └─ en_us.json
+│     ├─ models                               # Model JSON files
+│     │  ├─ block                             # Block model JSON files
+│     │  │  ├─ iron_keg_block.json
+│     │  │  └─ oak_iron_barrel_block.json
+│     │  └─ item                              # Item model JSON files
+│     │     ├─ big_oak_glass_flask.json
+│     │     ├─ iron_keg.json
+│     │     ├─ medium_oak_glass_flask.json
+│     │     ├─ oak_iron_barrel.json
+│     │     └─ small_oak_glass_flask.json
+│     └─ textures                             # Texture image files
+│        ├─ block                             # Block texture image files
+│        │  ├─ iron_keg_block.png
+│        │  └─ oak_iron_barrel_block.png
+│        └─ item                              # Item texture image files
+│           ├─ big_oak_glass_flask.png
+│           ├─ iron_keg.png
+│           ├─ medium_oak_glass_flask.png
+│           ├─ oak_iron_barrel.png
+│           └─ small_oak_glass_flask.png
+├─ palettes                                   # Color palettes for texture variations
+│  ├─ glass                                   # Glass texture palettes
 │  │  ├─ black_stained_glass.texture-palettes.json
 │  │  ├─ blue_stained_glass.texture-palettes.json
 │  │  ├─ brown_stained_glass.texture-palettes.json
@@ -692,7 +742,7 @@ batch_texture_generator
 │  │  ├─ tinted_glass.texture-palettes.json
 │  │  ├─ white_stained_glass.texture-palettes.json
 │  │  └─ yellow_stained_glass.texture-palettes.json
-│  ├─ metal
+│  ├─ metal                                   # Metal texture palettes
 │  │  ├─ copper.texture-palettes.json
 │  │  ├─ copper_exposed.texture-palettes.json
 │  │  ├─ copper_oxidized.texture-palettes.json
@@ -700,7 +750,7 @@ batch_texture_generator
 │  │  ├─ gold.texture-palettes.json
 │  │  ├─ iron.texture-palettes.json
 │  │  └─ netherite.texture-palettes.json
-│  └─ wood
+│  └─ wood                                    # Wood texture palettes
 │     ├─ acacia.texture-palettes.json
 │     ├─ bamboo.texture-palettes.json
 │     ├─ birch.texture-palettes.json
@@ -713,13 +763,23 @@ batch_texture_generator
 │     ├─ pale_oak.texture-palettes.json
 │     ├─ spruce.texture-palettes.json
 │     └─ warped.texture-palettes.json
-├─ README.md
-├─ requirements.txt
-├─ schemas
-│  ├─ common.schema.json
-│  └─ texture-palettes.schema.json
-├─ textures
-│  ├─ glass
+├─ README.md                                 # Project documentation and overview
+├─ requirements.txt                          # Python dependencies
+├─ schemas                                   # JSON schema definitions
+│  ├─ common.schema.json                     # Common schema definitions
+│  └─ texture-palettes.schema.json           # Texture palettes schema definition
+├─ templates                                 # Model templates for blocks and items
+│  ├─ block                                  # Block model templates
+│  │  ├─ barrel_block.btg-template.json
+│  │  └─ keg_block.btg-template.json
+│  └─ item                                   # Item model templates
+│     ├─ barrel.btg-template.json
+│     ├─ big_flask.btg-template.json
+│     ├─ keg.btg-template.json
+│     ├─ medium_flask.btg-template.json
+│     └─ small_flask.btg-template.json
+├─ textures                                  # Texture image files for palette generation
+│  ├─ glass                                  # Glass texture image files
 │  │  ├─ black_stained_glass.png
 │  │  ├─ blue_stained_glass.png
 │  │  ├─ brown_stained_glass.png
@@ -738,7 +798,7 @@ batch_texture_generator
 │  │  ├─ tinted_glass.png
 │  │  ├─ white_stained_glass.png
 │  │  └─ yellow_stained_glass.png
-│  ├─ metal
+│  ├─ metal                                   # Metal texture image files
 │  │  ├─ copper.png
 │  │  ├─ copper_exposed.png
 │  │  ├─ copper_oxidized.png
@@ -746,7 +806,7 @@ batch_texture_generator
 │  │  ├─ gold.png
 │  │  ├─ iron.png
 │  │  └─ netherite.png
-│  └─ wood
+│  └─ wood                                    # Wood texture image files
 │     ├─ acacia.png
 │     ├─ bamboo.png
 │     ├─ birch.png
@@ -759,30 +819,8 @@ batch_texture_generator
 │     ├─ pale_oak.png
 │     ├─ spruce.png
 │     └─ warped.png
-├─ textures_input
-│  ├─ block
-│  │  ├─ barrel_block.btg-template.json
-│  │  ├─ barrel_block.png
-│  │  ├─ keg_block.btg-template.json
-│  │  └─ keg_block.png
-│  └─ item
-│     ├─ barrel.btg-template.json
-│     ├─ barrel.png
-│     ├─ big_flask.btg-template.json
-│     ├─ big_flask.png
-│     ├─ keg.btg-template.json
-│     ├─ keg.png
-│     ├─ medium_flask.btg-template.json
-│     ├─ medium_flask.png
-│     ├─ small_flask.btg-template.json
-│     └─ small_flask.png
 └─ tools
-   ├─ btg-newer.py
-   ├─ btg-old.py
-   ├─ btg.py
-   ├─ btg_gui-newer.py
-   ├─ btg_gui-old.py
-   ├─ btg_gui.py
-   └─ palette_remapping.py
+   ├─ btg.py                                  # Main script for batch texture generation
+   └─ btg_gui.py                              # GUI script for batch texture generation
 
 ```
