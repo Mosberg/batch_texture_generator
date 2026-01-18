@@ -725,12 +725,6 @@ def parse_legacy_task_templates(path: Path) -> List[LegacyTask]:
 # ----------------------------
 # Vanilla-ish JSON generators (items/models/lang/blockstates)
 # ----------------------------
-def title_from_id(s: str) -> str:
-    s = s.replace(":", "_").replace("/", "_").replace("-", "_")
-    parts = [p for p in s.split("_") if p]
-    return " ".join(p[:1].upper() + p[1:] for p in parts)
-
-
 def minecraft_item_model(namespace: str, item_id: str) -> Dict[str, Any]:
     return {
         "parent": "item/generated",
@@ -1551,6 +1545,12 @@ def save_lang(path: Path, data: Dict[str, str]) -> None:
     save_json(path, ordered, sort_keys=False)
 
 
+def title_from_id(s: str) -> str:
+    s = s.replace(":", "_").replace("/", "_").replace("-", "_")
+    parts = [p for p in s.split("_") if p]
+    return " ".join(p[:1].upper() + p[1:] for p in parts)
+
+
 def cmd_assets(args: argparse.Namespace) -> int:
     textures_dir = Path(args.textures or "output/textures/item")
     items_dir = Path(args.items_dir or "output/items")
@@ -1849,6 +1849,55 @@ def build_parser() -> argparse.ArgumentParser:
         help="Overwrite existing lang keys if present.",
     )
     x.set_defaults(func=cmd_assets)
+
+    # block-assets
+    from btg_block_assets import cmd_block_assets
+
+    b = sub.add_parser(
+        "block-assets",
+        help="Generate block models, blockstates, block item assets, and en_us.json entries from block textures.",
+    )
+    b.add_argument(
+        "--textures",
+        default="output/textures/block",
+        help="Directory containing block textures (PNG). Subfolders become itemGroups.",
+    )
+    b.add_argument(
+        "--no-recursive",
+        action="store_true",
+        help="Do not recurse textures directory.",
+    )
+    b.add_argument(
+        "--base-dir",
+        default=None,
+        help="Base output directory containing textures/, models/, blockstates/, items/, lang/. If omitted, inferred from --textures when it ends with textures/block.",
+    )
+    b.add_argument(
+        "--namespace",
+        default="modid",
+        help="Namespace/modid used in lang keys and model references.",
+    )
+    b.add_argument(
+        "--lang-file",
+        default="en_us.json",
+        help="Language file name (default: en_us.json).",
+    )
+    b.add_argument(
+        "--overwrite-lang",
+        action="store_true",
+        help="Overwrite existing lang keys if present.",
+    )
+    b.add_argument(
+        "--model-templates",
+        default="templates/block_assets/models",
+        help="Optional directory with per-block model templates: <block_id>.json",
+    )
+    b.add_argument(
+        "--blockstate-templates",
+        default="templates/block_assets/blockstates",
+        help="Optional directory with per-block blockstate templates: <block_id>.json",
+    )
+    b.set_defaults(func=cmd_block_assets)
 
     return p
 
