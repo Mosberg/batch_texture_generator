@@ -3,3 +3,5 @@ jsonschema
 requests
 black
 flake8
+pytest
+pylance

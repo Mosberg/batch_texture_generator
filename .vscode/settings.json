@@ -1,5 +1,7 @@
 {
+  // -------------------------
   // Python venv
+  // -------------------------
   "python.defaultInterpreterPath": "${workspaceFolder}\\.btg\\Scripts\\python.exe",
   "code-runner.executorMap": {
     "python": "\"${workspaceFolder}\\.btg\\Scripts\\python.exe\" -u"
@@ -9,7 +11,9 @@
   "search.exclude": { "**/.btg": true },
   "files.watcherExclude": { "**/.btg/**": true },
 
-  // JSON Schema mappings (workspace-relative is supported here). [web:58]
+  // -------------------------
+  // JSON schema mappings
+  // -------------------------
   "json.schemas": [
     {
       "fileMatch": ["schemas/common.schema.json"],
@@ -25,18 +29,24 @@
     }
   ],
 
-  // =========================
-  // Copilot Chat: workspace context (project-specific)
-  // =========================
+  // -------------------------
+  // Copilot Chat: workspace context
+  // -------------------------
   "github.copilot.chat.workspace.enableFullWorkspace": true,
   "github.copilot.chat.workspace.enableCodeSearch": true,
   "github.copilot.chat.workspace.enableEmbeddingsSearch": true,
   "github.copilot.chat.workspace.maxLocalIndexSize": 150000,
 
-  // Optional: tuned commit/PR text generation
+  "chat.instructionsFilesLocations": {
+    ".github/instructions": true,
+    ".github/copilot-instructions.md": true,
+    "/Users/vscode/repos/instructions": true
+  },
+
+  // Keep commit/PR generation aligned with repo conventions.
   "github.copilot.chat.commitMessageGeneration.instructions": [
     {
-      "text": "Use Conventional Commits. Mention schema version bumps explicitly."
+      "text": "Use Conventional Commits. Mention schema/version changes explicitly."
     }
   ],
   "github.copilot.chat.pullRequestDescriptionGeneration.instructions": [

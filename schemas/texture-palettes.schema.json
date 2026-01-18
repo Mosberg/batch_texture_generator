@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://mosberg.github.io/schemas/textures/texture-palettes.schema.json",
   "title": "Texture Palettes",
-  "description": "Palette/group data used by recolor tooling. Each item defines per-texture palette groups for deterministic palette swapping. Colors are 8-digit RGBA hex.",
+  "description": "Palette/group data used by recolor tooling. Each item defines per-texture palette groups for deterministic palette swapping. Colors are 8-digit RGBA hex (#RRGGBBAA).",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema", "version", "items"],
@@ -11,15 +11,12 @@
       "type": "string",
       "description": "Optional JSON Schema pointer for editors (recommended for palette JSON files)."
     },
-
     "schema": { "const": "texture-palettes" },
-
     "version": {
       "type": "integer",
       "minimum": 1,
       "description": "Schema/data version for forward-compatible tooling."
     },
-
     "generator": {
       "type": "object",
       "additionalProperties": false,
@@ -30,15 +27,13 @@
       },
       "description": "Optional metadata about the tool that produced this palette file."
     },
-
     "items": {
       "type": "array",
       "minItems": 1,
-      "items": { "$ref": "#/$defs/paletteItem" },
-      "uniqueItemProperties": ["id"]
+      "maxItems": 10000,
+      "items": { "$ref": "#/$defs/paletteItem" }
     }
   },
-
   "$defs": {
     "paletteItem": {
       "type": "object",
@@ -49,24 +44,19 @@
         "name": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
         "path": { "$ref": "common.schema.json#/$defs/texturePngPath" },
         "material": { "$ref": "common.schema.json#/$defs/materialId" },
-
         "groups": {
           "type": "object",
           "minProperties": 1,
-
           "propertyNames": { "$ref": "common.schema.json#/$defs/groupId" },
-
           "additionalProperties": { "$ref": "#/$defs/paletteGroup" },
           "description": "Group id -> group definition (e.g. base, trim, veins)."
         },
-
         "metadata": {
           "$ref": "common.schema.json#/$defs/jsonObject",
           "description": "Optional metadata for tooling (notes, tags, provenance)."
         }
       }
     },
-
     "paletteGroup": {
       "type": "object",
       "additionalProperties": false,
@@ -76,28 +66,14 @@
           "type": "array",
           "minItems": 1,
           "maxItems": 256,
+          "uniqueItems": true,
           "items": { "$ref": "common.schema.json#/$defs/hex8" },
           "description": "Ordered palette colors (RGBA). Index mapping is used during recolor."
         },
-
-        "sortHint": {
-          "type": "string",
-          "enum": [
-            "luminance_asc",
-            "luminance_desc",
-            "alpha_asc",
-            "alpha_desc",
-            "none"
-          ],
-          "default": "none",
-          "description": "Optional hint for extraction/sorting tools."
-        },
-
         "comment": {
           "type": "string",
           "description": "Human notes."
         },
-
         "metadata": { "$ref": "common.schema.json#/$defs/jsonObject" }
       }
     }

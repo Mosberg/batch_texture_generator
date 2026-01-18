@@ -10,52 +10,39 @@
       "pattern": "^[a-z][a-z0-9_]{0,63}$",
       "description": "Lowercase snake_case identifier."
     },
-
     "groupId": {
       "type": "string",
       "pattern": "^[a-z][a-z0-9_-]{0,63}$",
       "description": "Group identifier (letters/digits/_/-)."
     },
-
     "nonEmptyString": {
       "type": "string",
       "minLength": 1
     },
-
     "texturePngPath": {
       "type": "string",
       "pattern": "^textures/[A-Za-z0-9/._-]+\\.png$",
       "description": "Textures path (textures/), including .png."
     },
-
     "hex8": {
       "type": "string",
       "pattern": "^#[0-9A-Fa-f]{8}$",
       "description": "8-digit RGBA hex with leading # (e.g. '#d8d8d8ff')."
     },
-
     "jsonObject": {
       "type": "object",
       "additionalProperties": true,
       "description": "Arbitrary JSON object."
     },
-
     "materialId": {
       "type": "string",
       "description": "Material category.",
       "enum": ["glass", "metal", "wood"]
     },
-
     "semver": {
       "type": "string",
       "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$",
       "description": "Semantic version string (e.g. 1.0.0, 1.2.3-alpha.1)."
-    },
-
-    "relativeSchemaPath": {
-      "type": "string",
-      "pattern": "^\\./[A-Za-z0-9._/-]+\\.schema\\.json$",
-      "description": "Workspace-relative schema path (used in VS Code mapping)."
     }
   }
 }
