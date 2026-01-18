@@ -1,27 +1,27 @@
 from __future__ import annotations
 
+import os
 import queue
 import threading
 import tkinter as tk
-import os
 from dataclasses import dataclass
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 from typing import List, Optional
 
-import tools.btg_v4 as btg_v4  # tools/btg.py
+import tools.btg_v1 as btg_v1  # tools/btg.py
 
 # ----------------------------
 # Logging bridge to Tk
 # ----------------------------
 
 
-class TkLogHandler(btg_v4.logging.Handler):
+class TkLogHandler(btg_v1.logging.Handler):
     def __init__(self, q: "queue.Queue[str]") -> None:
         super().__init__()
         self._q = q
 
-    def emit(self, record: btg_v4.logging.LogRecord) -> None:
+    def emit(self, record: btg_v1.logging.LogRecord) -> None:
         try:
             msg = self.format(record)
             self._q.put_nowait(msg)
@@ -84,16 +84,16 @@ class App(ttk.Frame):
 
     def _setup_logging(self) -> None:
         handler = TkLogHandler(self.log_q)
-        handler.setFormatter(btg_v4.logging.Formatter("%(levelname)s: %(message)s"))
+        handler.setFormatter(btg_v1.logging.Formatter("%(levelname)s: %(message)s"))
 
         # Attach to btg logger
-        btg_v4.LOG.setLevel(btg_v4.logging.INFO)
-        btg_v4.LOG.handlers.clear()
-        btg_v4.LOG.addHandler(handler)
+        btg_v1.LOG.setLevel(btg_v1.logging.INFO)
+        btg_v1.LOG.handlers.clear()
+        btg_v1.LOG.addHandler(handler)
 
         # Also route root logger (argparse/main may use it)
-        root = btg_v4.logging.getLogger()
-        root.setLevel(btg_v4.logging.INFO)
+        root = btg_v1.logging.getLogger()
+        root.setLevel(btg_v1.logging.INFO)
         root.handlers.clear()
         root.addHandler(handler)
 
@@ -318,7 +318,7 @@ class App(ttk.Frame):
                 old_cwd = Path.cwd()
                 os.chdir(repo)
                 try:
-                    btg_v4.main(argv)
+                    btg_v1.main(argv)
                 finally:
                     os.chdir(old_cwd)
             except Exception as e:

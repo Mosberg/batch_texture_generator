@@ -331,7 +331,7 @@ class BTGGui(tk.Tk):
     # --------------
     def _btg_path(self) -> Path:
         # btg.py is assumed to live next to this gui script
-        return Path(__file__).with_name("btg.py")
+        return Path(__file__).with_name("btg_v4.py")
 
     def _rel_to_project(self, p: Path) -> str:
         try:
@@ -347,7 +347,7 @@ class BTGGui(tk.Tk):
 
         btg = self._btg_path()
         if not btg.exists():
-            self._log_line(f"btg.py not found next to GUI: {btg}")
+            self._log_line(f"btg_v4.py not found next to GUI: {btg}")
             return
 
         cwd = Path(self.project_root.get())
