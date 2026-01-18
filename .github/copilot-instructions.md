@@ -17,7 +17,7 @@
 - Palettes: `palettes/**/**.texture-palettes.json`
 - Source textures: `textures/<material>/*.png`
 - Inputs to recolor: `textures_input/**/*.png`
-- Outputs: `textures_output/**/*.png`
+- Outputs: `output/textures/item/**/*.png`
 - Tooling: `tools/btg.py`
 
 ## CLI expectations

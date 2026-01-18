@@ -213,7 +213,7 @@ class App(ttk.Frame):
         self.rec_dst_id = tk.StringVar(value="iron")
         self.rec_group = tk.StringVar(value="base")
         self.rec_input = tk.StringVar(value="textures_input")
-        self.rec_output = tk.StringVar(value="textures_output")
+        self.rec_output = tk.StringVar(value="output/textures/item")
         self.rec_min_alpha = tk.IntVar(value=1)
         self.rec_alpha_weight = tk.DoubleVar(value=0.25)
         self.rec_preserve_alpha = tk.BooleanVar(value=True)

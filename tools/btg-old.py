@@ -558,7 +558,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Group id (default: base if present, else first group).",
     )
     r.add_argument("--input", default="textures_input", help="Input directory.")
-    r.add_argument("--output", default="textures_output", help="Output directory.")
+    r.add_argument("--output", default="output/textures/item", help="Output directory.")
     r.add_argument(
         "--min-alpha",
         type=int,

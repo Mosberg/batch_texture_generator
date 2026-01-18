@@ -892,7 +892,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     r = sub.add_parser(
         "recolor",
-        help="Single-material recolor for textures_input/ into textures_output/.",
+        help="Single-material recolor for textures_input/ into output/textures/item/.",
     )
     r.add_argument("--palettes", default="palettes", help="Palettes directory.")
     r.add_argument(
@@ -911,7 +911,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--group", default=None, help="Group id (default: base if present, else first)."
     )
     r.add_argument("--input", default="textures_input", help="Input directory.")
-    r.add_argument("--output", default="textures_output", help="Output directory.")
+    r.add_argument("--output", default="output/textures/item", help="Output directory.")
     r.add_argument("--min-alpha", type=int, default=1)
     r.add_argument("--alpha-weight", type=float, default=0.25)
     r.add_argument("--no-preserve-alpha", action="store_true")
@@ -933,7 +933,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Directory containing *.btg-template.json + PNGs.",
     )
     g.add_argument("--palettes", default="palettes", help="Palettes directory.")
-    g.add_argument("--output", default="textures_output", help="Output directory.")
+    g.add_argument("--output", default="output/textures/item", help="Output directory.")
     g.add_argument("--min-alpha", type=int, default=1)
     g.add_argument("--alpha-weight", type=float, default=0.25)
     g.add_argument("--no-preserve-alpha", action="store_true")

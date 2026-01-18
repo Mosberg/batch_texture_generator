@@ -35,7 +35,7 @@ python tools/btg.py extract --max-colors 32
 python tools/btg.py recolor ^
   --src-palette wood/oak.texture-palettes.json --src-id oak ^
   --dst-palette metal/iron.texture-palettes.json --dst-id iron ^
-  --output textures_output
+  --output output/textures/item
 ```
 
 ## Notes
@@ -150,7 +150,7 @@ batch_texture_generator/               # Root directory
 │  ├─ medium_flask.texture-palettes.json
 │  ├─ small_flask.png
 │  └─ small_flask.texture-palettes.json
-├─ textures_output/                    # Texture PNG's which have been recolored
+├─ output/textures/item/                    # Texture PNG's which have been recolored
 └─ tools/
    ├─ btg.py                           # Main script for batch texture generation
    └─ btg_gui.py                       # GUI script for batch texture generation
