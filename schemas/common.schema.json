@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mosberg.github.io/schemas/textures/common.schema.json",
+  "title": "Common Schema Definitions",
+  "description": "Common schema definitions shared across multiple texture-related schemas.",
+  "type": "object",
+  "$defs": {
+    "snakeId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{0,63}$",
+      "description": "Lowercase snake_case identifier (used for material)."
+    },
+    "texturePngPath": {
+      "type": "string",
+      "pattern": "^textures/[a-z0-9/._-]+\\.png$",
+      "description": "Textures path (textures/), including .png."
+    },
+    "hex8": {
+      "type": "string",
+      "pattern": "^#[0-9A-Fa-f]{8}$",
+      "description": "8-digit RGBA hex with leading # (e.g. '#d8d8d8ff')."
+    },
+    "jsonObject": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Arbitrary JSON object."
+    },
+    "materialId": {
+      "type": "string",
+      "description": "Allowed material ids shared across schemas.",
+      "enum": ["glass", "metal", "wood"]
+    }
+  }
+}

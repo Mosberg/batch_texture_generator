@@ -1,0 +1,21 @@
+{
+  "schema": "texture-palettes",
+  "items": [
+    {
+      "path": "textures/wood/oak.png",
+      "id": "oak",
+      "name": "Oak",
+      "groups": {
+        "wood": [
+          ["#67502c"],
+          ["#7e6237"],
+          ["#967441"],
+          ["#9f844d"],
+          ["#af8f55"],
+          ["#b8945f"],
+          ["#c29d62"]
+        ]
+      }
+    }
+  ]
+}

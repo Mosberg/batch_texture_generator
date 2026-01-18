@@ -1,0 +1,25 @@
+{
+  "schema": "texture-palettes",
+  "items": [
+    {
+      "path": "textures/metal/iron.png",
+      "id": "iron",
+      "name": "Iron",
+      "groups": {
+        "metal": [
+          ["#b1b0b0"],
+          ["#b9b9b9"],
+          ["#c1c1c1"],
+          ["#d1cfcf"],
+          ["#d6d6d6"],
+          ["#dcdcdc"],
+          ["#e0e0e0"],
+          ["#e6e6e6"],
+          ["#eaeaea"],
+          ["#ececec"],
+          ["#f2f2f2"]
+        ]
+      }
+    }
+  ]
+}

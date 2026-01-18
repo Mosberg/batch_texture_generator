@@ -1,0 +1,19 @@
+{
+  "schema": "texture-palettes",
+  "items": [
+    {
+      "path": "textures/glass/glass.png",
+      "id": "glass",
+      "name": "Glass",
+      "groups": {
+        "glass": [
+          ["#000000"],
+          ["#7baeb7"],
+          ["#8bc1cd"],
+          ["#a8d0d9"],
+          ["#d0eae9"]
+        ]
+      }
+    }
+  ]
+}

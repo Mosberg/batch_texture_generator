@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mosberg.github.io/schemas/textures/texture-palettes.schema.json",
+  "title": "Texture Palettes",
+  "description": "Extracted per-texture palette/group data used by recolor tooling. Each item defines a palette of colors associated with a specific texture. These palettes can be used for recoloring textures in various materials or models. The schema ensures that each palette has a unique identifier, a reference to the texture file, and a list of colors in RGBA hex format. RGBA hex colors are sorted in ascending order based on their alpha values to facilitate efficient processing.",
+  "type": "object",
+  "required": ["schema", "items"],
+  "properties": {
+    "schema": { "const": "texture-palettes" },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "texture", "colors"],
+        "properties": {
+          "id": { "$ref": "common.schema.json#$defs/snakeId" },
+          "texture": { "$ref": "common.schema.json#$defs/texturePngPath" },
+          "material": { "$ref": "common.schema.json#$defs/materialId" },
+          "colors": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "$ref": "common.schema.json#$defs/hex8" },
+            "description": "List of colors in 8-digit RGBA hex format."
+          },
+          "metadata": {
+            "$ref": "common.schema.json#$defs/jsonObject",
+            "description": "Optional arbitrary metadata for this palette."
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}
