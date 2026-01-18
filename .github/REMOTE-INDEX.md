@@ -22,3 +22,5 @@
 - [Batch Texture Generator README](../README.md) - main documentation for the Batch Texture Generator project
 - [Batch Texture Generator Copilot Instructions](./copilot-instructions.md) - GitHub Copilot instructions for the project
 - [Batch Texture Generator Github Repository](https://github.com/Mosberg/batch_texture_generator) - GitHub repository for the Batch Texture Generator project
+
+- [Perplexity AI - Project Chat](https://www.perplexity.ai/search/generate-a-perfect-and-flawles-wMvuaSFaTL2xyfd42oKCgA) - AI-powered chat for project assistance
