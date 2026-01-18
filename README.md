@@ -1,6 +1,9 @@
 # Batch Textures and Assets Generator
 
 **Generate several \*.py modules which all can be controlled from a main script and tkinter gui.**
+**Split into several modules for better maintainability.**
+
+## Features
 
 - Validate
   - Check for missing files
