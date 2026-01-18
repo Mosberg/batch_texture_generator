@@ -1,4 +1,9 @@
 {
+  "itemgroup.modid.barrels": "Barrels",
+  "itemgroup.modid.small_flasks": "Small Flasks",
+  "itemgroup.modid.medium_flasks": "Medium Flasks",
+  "itemgroup.modid.big_flasks": "Big Flasks",
+  "itemgroup.modid.kegs": "Kegs",
   "item.modid.acacia_copper_barrel": "Acacia Copper Barrel",
   "item.modid.acacia_copper_exposed_barrel": "Acacia Copper Exposed Barrel",
   "item.modid.acacia_copper_oxidized_barrel": "Acacia Copper Oxidized Barrel",
