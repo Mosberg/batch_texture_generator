@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "modid:item/copper_exposed_keg_block"
+  }
+}

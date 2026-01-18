@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "modid:item/iron_keg_block"
+  }
+}

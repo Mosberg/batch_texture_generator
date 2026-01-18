@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "modid:item/oak_copper_barrel_block"
+  }
+}
