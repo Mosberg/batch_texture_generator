@@ -8,15 +8,15 @@ from pathlib import Path
 from tkinter import messagebox, ttk
 from typing import List, Optional
 
-import btg
+import tools.btg_v4 as btg_v4
 
 
-class TkLogHandler(btg.logging.Handler):
+class TkLogHandler(btg_v4.logging.Handler):
     def __init__(self, q: "queue.Queue[str]") -> None:
         super().__init__()
         self._q = q
 
-    def emit(self, record: btg.logging.LogRecord) -> None:
+    def emit(self, record: btg_v4.logging.LogRecord) -> None:
         try:
             self._q.put_nowait(self.format(record))
         except Exception:
@@ -47,14 +47,14 @@ class App(ttk.Frame):
 
     def _setup_logging(self) -> None:
         handler = TkLogHandler(self.log_q)
-        handler.setFormatter(btg.logging.Formatter("%(levelname)s: %(message)s"))
+        handler.setFormatter(btg_v4.logging.Formatter("%(levelname)s: %(message)s"))
 
-        btg.LOG.setLevel(btg.logging.INFO)
-        btg.LOG.handlers.clear()
-        btg.LOG.addHandler(handler)
+        btg_v4.LOG.setLevel(btg_v4.logging.INFO)
+        btg_v4.LOG.handlers.clear()
+        btg_v4.LOG.addHandler(handler)
 
-        root = btg.logging.getLogger()
-        root.setLevel(btg.logging.INFO)
+        root = btg_v4.logging.getLogger()
+        root.setLevel(btg_v4.logging.INFO)
         root.handlers.clear()
         root.addHandler(handler)
 
@@ -139,7 +139,7 @@ class App(ttk.Frame):
                 old = Path.cwd()
                 os.chdir(repo)
                 try:
-                    btg.main(argv)
+                    btg_v4.main(argv)
                 finally:
                     os.chdir(old)
             except Exception as e:

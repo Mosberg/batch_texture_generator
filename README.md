@@ -35,7 +35,7 @@ python tools/btg.py extract --max-colors 32
 python tools/btg.py recolor ^
   --src-palette wood/oak.texture-palettes.json --src-id oak ^
   --dst-palette metal/iron.texture-palettes.json --dst-id iron ^
-  --output output/textures/item
+  --output output/modid/textures/item
 ```
 
 ## Notes
@@ -45,10 +45,11 @@ python tools/btg.py recolor ^
 
 ## Output
 
-- Recolored textures are saved to `output/textures/item/`.
-- Generated item models are saved to `output/models/item/`.
-- Generated item JSONs are saved to `output/items/`.
-- Language entries are saved to `output/lang/en_us.json`.
+- Recolored textures are saved to `output/modid/textures/item/`.
+- Generated item models are saved to `output/modid/models/item/`.
+- Generated item JSONs are saved to `output/modid/items/`.
+- Language entries are saved to `output/modid/lang/en_us.json`.
+- Block models and blockstates are saved to `output/modid/models/block/` and `output/modid/blockstates/`.
 
 ### output/modid/blockstates/
 
