@@ -150,7 +150,7 @@ batch_texture_generator/               # Root directory
 │  ├─ medium_flask.texture-palettes.json
 │  ├─ small_flask.png
 │  └─ small_flask.texture-palettes.json
-├─ output/textures/item/                    # Texture PNG's which have been recolored
+├─ output/textures/item/                    # Texture PNG's which have been generated + models/item/ JSON's + items/ JSON's + lang/en_us.json for Minecraft
 └─ tools/
    ├─ btg.py                           # Main script for batch texture generation
    └─ btg_gui.py                       # GUI script for batch texture generation
