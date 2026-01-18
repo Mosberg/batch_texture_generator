@@ -1,8 +1,13 @@
 {
   "schema": "btg-template",
   "version": 1,
-  "template": { "id": "big_flask", "path": "textures_input/big_flask.png" },
-  "output": { "pattern": "big_{wood}_{glass}_flask.png" },
+  "template": {
+    "id": "big_flask",
+    "path": "textures_input/big_flask.png"
+  },
+  "output": {
+    "pattern": "big_{wood}_{glass}_flask.png"
+  },
   "slots": [
     {
       "slot": "wood",

@@ -4,8 +4,8 @@ import os
 import queue
 import threading
 import tkinter as tk
-from tkinter import messagebox, ttk
 from pathlib import Path
+from tkinter import messagebox, ttk
 from typing import List, Optional
 
 import btg
@@ -40,8 +40,8 @@ class App(ttk.Frame):
         self._worker: Optional[threading.Thread] = None
 
         self._setup_logging()
-
         self.pack(fill="both", expand=True)
+
         self._build_ui()
         self._poll_logs()
 
@@ -60,7 +60,7 @@ class App(ttk.Frame):
 
     def _build_ui(self) -> None:
         self.master.title("Batch Texture Generator (btg)")
-        self.master.geometry("1000x740")
+        self.master.geometry("1020x760")
 
         top = ttk.Frame(self)
         top.pack(fill="x", padx=10, pady=10)
@@ -82,24 +82,27 @@ class App(ttk.Frame):
         self.tab_extract = ttk.Frame(nb)
         self.tab_recolor = ttk.Frame(nb)
         self.tab_generate = ttk.Frame(nb)
+        self.tab_autotemplate = ttk.Frame(nb)
 
         nb.add(self.tab_validate, text="Validate")
         nb.add(self.tab_normalize, text="Normalize")
         nb.add(self.tab_extract, text="Extract")
         nb.add(self.tab_recolor, text="Recolor")
         nb.add(self.tab_generate, text="Generate")
+        nb.add(self.tab_autotemplate, text="AutoTemplate")
 
         self._build_validate_tab()
         self._build_normalize_tab()
         self._build_extract_tab()
         self._build_recolor_tab()
         self._build_generate_tab()
+        self._build_autotemplate_tab()
 
         bottom = ttk.Frame(self)
         bottom.pack(fill="both", expand=True, padx=10, pady=(0, 10))
 
         ttk.Label(bottom, text="Output:").pack(anchor="w")
-        self.log_text = tk.Text(bottom, height=14, wrap="word")
+        self.log_text = tk.Text(bottom, height=16, wrap="word")
         self.log_text.pack(fill="both", expand=True)
 
         btns = ttk.Frame(bottom)
@@ -145,7 +148,7 @@ class App(ttk.Frame):
         self._worker = threading.Thread(target=work, daemon=True)
         self._worker.start()
 
-    # ----- tabs -----
+    # ---- UI helpers ----
 
     def _row_dir(
         self, parent: ttk.Frame, row: int, label: str, var: tk.StringVar
@@ -166,12 +169,15 @@ class App(ttk.Frame):
             row=row, column=1, sticky="w", padx=8
         )
 
+    # ---- Tabs ----
+
     def _build_validate_tab(self) -> None:
         f = ttk.Frame(self.tab_validate)
         f.pack(fill="x", padx=10, pady=10)
 
         self.val_schemas = tk.StringVar(value="schemas")
         self.val_palettes = tk.StringVar(value="palettes")
+
         self._row_dir(f, 0, "Schemas dir:", self.val_schemas)
         self._row_dir(f, 1, "Palettes dir:", self.val_palettes)
 
@@ -270,7 +276,7 @@ class App(ttk.Frame):
         )
         self._row_text(f, 3, "Source id:", self.rec_src_id)
         self._row_text(f, 4, "Target id:", self.rec_dst_id)
-        self._row_text(f, 5, "Group:", self.rec_group)
+        self._row_text(f, 5, "Group (or blank for auto):", self.rec_group)
         self._row_dir(f, 6, "Input dir:", self.rec_input)
         self._row_dir(f, 7, "Output dir:", self.rec_output)
 
@@ -309,8 +315,6 @@ class App(ttk.Frame):
                 self.rec_src_id.get(),
                 "--dst-id",
                 self.rec_dst_id.get(),
-                "--group",
-                self.rec_group.get().strip(),
                 "--input",
                 self.rec_input.get(),
                 "--output",
@@ -320,6 +324,9 @@ class App(ttk.Frame):
                 "--alpha-weight",
                 str(self.rec_alpha_weight.get()),
             ]
+            group = self.rec_group.get().strip()
+            if group:
+                argv += ["--group", group]
             if not self.rec_preserve_alpha.get():
                 argv += ["--no-preserve-alpha"]
             if not self.rec_exact_first.get():
@@ -344,7 +351,9 @@ class App(ttk.Frame):
         self.gen_dry_run = tk.BooleanVar(value=False)
         self.gen_limit = tk.StringVar(value="")
 
-        self._row_dir(f, 0, "Templates dir (btg-template + PNG):", self.gen_templates)
+        self._row_dir(
+            f, 0, "Templates dir (*.btg-template.json + PNG):", self.gen_templates
+        )
         self._row_dir(f, 1, "Palettes dir:", self.gen_palettes)
         self._row_dir(f, 2, "Output dir:", self.gen_output)
 
@@ -400,12 +409,69 @@ class App(ttk.Frame):
                 argv += ["--no-exact-first"]
             if self.gen_dry_run.get():
                 argv += ["--dry-run"]
-            if self.gen_limit.get().strip():
-                argv += ["--limit", self.gen_limit.get().strip()]
+            limit = self.gen_limit.get().strip()
+            if limit:
+                argv += ["--limit", limit]
             self._run_in_thread(argv)
 
         ttk.Button(f, text="Run Generate", command=run).grid(
             row=8, column=0, sticky="w", pady=(10, 0)
+        )
+
+    def _build_autotemplate_tab(self) -> None:
+        f = ttk.Frame(self.tab_autotemplate)
+        f.pack(fill="x", padx=10, pady=10)
+
+        self.at_templates = tk.StringVar(value="textures_input")
+        self.at_palettes = tk.StringVar(value="palettes")
+        self.at_out_dir = tk.StringVar(value="")
+        self.at_materials = tk.StringVar(value="wood,metal,glass")
+        self.at_min_alpha = tk.IntVar(value=1)
+        self.at_min_hits = tk.IntVar(value=2)
+        self.at_dry_run = tk.BooleanVar(value=False)
+
+        self._row_dir(f, 0, "Templates dir (*.png):", self.at_templates)
+        self._row_dir(f, 1, "Palettes dir:", self.at_palettes)
+        self._row_text(f, 2, "Output dir (blank = templates dir):", self.at_out_dir)
+        self._row_text(f, 3, "Materials (comma list):", self.at_materials)
+
+        ttk.Label(f, text="Min alpha:").grid(row=4, column=0, sticky="w", pady=(10, 0))
+        ttk.Spinbox(f, from_=0, to=255, textvariable=self.at_min_alpha, width=8).grid(
+            row=4, column=1, sticky="w", pady=(10, 0)
+        )
+
+        ttk.Label(f, text="Min hits:").grid(row=5, column=0, sticky="w")
+        ttk.Spinbox(f, from_=0, to=999, textvariable=self.at_min_hits, width=8).grid(
+            row=5, column=1, sticky="w"
+        )
+
+        ttk.Checkbutton(
+            f, text="Dry run (no files written)", variable=self.at_dry_run
+        ).grid(row=6, column=0, sticky="w", pady=(8, 0))
+
+        def run() -> None:
+            argv = [
+                "autotemplate",
+                "--templates",
+                self.at_templates.get(),
+                "--palettes",
+                self.at_palettes.get(),
+                "--materials",
+                self.at_materials.get(),
+                "--min-alpha",
+                str(self.at_min_alpha.get()),
+                "--min-hits",
+                str(self.at_min_hits.get()),
+            ]
+            out_dir = self.at_out_dir.get().strip()
+            if out_dir:
+                argv += ["--out-dir", out_dir]
+            if self.at_dry_run.get():
+                argv += ["--dry-run"]
+            self._run_in_thread(argv)
+
+        ttk.Button(f, text="Run AutoTemplate", command=run).grid(
+            row=7, column=0, sticky="w", pady=(10, 0)
         )
 
 

@@ -1,8 +1,13 @@
 {
   "schema": "btg-template",
   "version": 1,
-  "template": { "id": "barrel", "path": "textures_input/barrel.png" },
-  "output": { "pattern": "{wood}_{metal}_barrel.png" },
+  "template": {
+    "id": "barrel",
+    "path": "textures_input/barrel.png"
+  },
+  "output": {
+    "pattern": "{wood}_{metal}_barrel.png"
+  },
   "slots": [
     {
       "slot": "wood",

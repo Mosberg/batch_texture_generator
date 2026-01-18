@@ -5,7 +5,9 @@
     "id": "medium_flask",
     "path": "textures_input/medium_flask.png"
   },
-  "output": { "pattern": "medium_{wood}_{glass}_flask.png" },
+  "output": {
+    "pattern": "medium_{wood}_{glass}_flask.png"
+  },
   "slots": [
     {
       "slot": "wood",
