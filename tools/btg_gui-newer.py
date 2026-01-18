@@ -35,11 +35,13 @@ class App(ttk.Frame):
     def __init__(self, master: tk.Tk) -> None:
         super().__init__(master)
         self.master = master
+
         self.log_q: "queue.Queue[str]" = queue.Queue()
         self._worker: Optional[threading.Thread] = None
 
         self._setup_logging()
         self.pack(fill="both", expand=True)
+
         self._build_ui()
         self._poll_logs()
 
@@ -81,7 +83,6 @@ class App(ttk.Frame):
         self.tab_recolor = ttk.Frame(nb)
         self.tab_generate = ttk.Frame(nb)
         self.tab_autotemplate = ttk.Frame(nb)
-        self.tab_assets = ttk.Frame(nb)
 
         nb.add(self.tab_validate, text="Validate")
         nb.add(self.tab_normalize, text="Normalize")
@@ -89,7 +90,6 @@ class App(ttk.Frame):
         nb.add(self.tab_recolor, text="Recolor")
         nb.add(self.tab_generate, text="Generate")
         nb.add(self.tab_autotemplate, text="AutoTemplate")
-        nb.add(self.tab_assets, text="Assets")
 
         self._build_validate_tab()
         self._build_normalize_tab()
@@ -97,7 +97,6 @@ class App(ttk.Frame):
         self._build_recolor_tab()
         self._build_generate_tab()
         self._build_autotemplate_tab()
-        self._build_assets_tab()
 
         bottom = ttk.Frame(self)
         bottom.pack(fill="both", expand=True, padx=10, pady=(0, 10))
@@ -122,7 +121,6 @@ class App(ttk.Frame):
                 self.log_text.see("end")
         except queue.Empty:
             pass
-
         self.after(100, self._poll_logs)
 
     def _run_in_thread(self, argv: List[str]) -> None:
@@ -151,6 +149,7 @@ class App(ttk.Frame):
         self._worker.start()
 
     # ---- UI helpers ----
+
     def _row_dir(
         self, parent: ttk.Frame, row: int, label: str, var: tk.StringVar
     ) -> None:
@@ -159,9 +158,7 @@ class App(ttk.Frame):
             row=row, column=1, sticky="w", padx=8
         )
         ttk.Button(
-            parent,
-            text="Browse…",
-            command=lambda v=var: _browse_dir(v, title=label),
+            parent, text="Browse…", command=lambda v=var: _browse_dir(v, title=label)
         ).grid(row=row, column=2, sticky="w")
 
     def _row_text(
@@ -173,6 +170,7 @@ class App(ttk.Frame):
         )
 
     # ---- Tabs ----
+
     def _build_validate_tab(self) -> None:
         f = ttk.Frame(self.tab_validate)
         f.pack(fill="x", padx=10, pady=10)
@@ -326,16 +324,13 @@ class App(ttk.Frame):
                 "--alpha-weight",
                 str(self.rec_alpha_weight.get()),
             ]
-
             group = self.rec_group.get().strip()
             if group:
                 argv += ["--group", group]
-
             if not self.rec_preserve_alpha.get():
                 argv += ["--no-preserve-alpha"]
             if not self.rec_exact_first.get():
                 argv += ["--no-exact-first"]
-
             self._run_in_thread(argv)
 
         ttk.Button(f, text="Run Recolor", command=run).grid(
@@ -408,18 +403,15 @@ class App(ttk.Frame):
                 "--alpha-weight",
                 str(self.gen_alpha_weight.get()),
             ]
-
             if not self.gen_preserve_alpha.get():
                 argv += ["--no-preserve-alpha"]
             if not self.gen_exact_first.get():
                 argv += ["--no-exact-first"]
             if self.gen_dry_run.get():
                 argv += ["--dry-run"]
-
             limit = self.gen_limit.get().strip()
             if limit:
                 argv += ["--limit", limit]
-
             self._run_in_thread(argv)
 
         ttk.Button(f, text="Run Generate", command=run).grid(
@@ -471,66 +463,14 @@ class App(ttk.Frame):
                 "--min-hits",
                 str(self.at_min_hits.get()),
             ]
-
             out_dir = self.at_out_dir.get().strip()
             if out_dir:
                 argv += ["--out-dir", out_dir]
             if self.at_dry_run.get():
                 argv += ["--dry-run"]
-
             self._run_in_thread(argv)
 
         ttk.Button(f, text="Run AutoTemplate", command=run).grid(
-            row=7, column=0, sticky="w", pady=(10, 0)
-        )
-
-    def _build_assets_tab(self) -> None:
-        f = ttk.Frame(self.tab_assets)
-        f.pack(fill="x", padx=10, pady=10)
-
-        self.as_textures = tk.StringVar(value="output/textures/item")
-        self.as_items_dir = tk.StringVar(value="output/items")
-        self.as_models_dir = tk.StringVar(value="output/models/item")
-        self.as_lang = tk.StringVar(value="output/lang/en_us.json")
-        self.as_namespace = tk.StringVar(value="modid")
-        self.as_overwrite_lang = tk.BooleanVar(value=False)
-        self.as_dry_run = tk.BooleanVar(value=False)
-
-        self._row_dir(f, 0, "Textures dir (output/textures/item):", self.as_textures)
-        self._row_dir(f, 1, "Items dir:", self.as_items_dir)
-        self._row_dir(f, 2, "Models/item dir:", self.as_models_dir)
-        self._row_text(f, 3, "Lang file (relative path):", self.as_lang)
-        self._row_text(f, 4, "Namespace/modid:", self.as_namespace)
-
-        ttk.Checkbutton(
-            f, text="Overwrite existing lang keys", variable=self.as_overwrite_lang
-        ).grid(row=5, column=0, sticky="w", pady=(8, 0))
-        ttk.Checkbutton(
-            f, text="Dry run (no files written)", variable=self.as_dry_run
-        ).grid(row=6, column=0, sticky="w", pady=(8, 0))
-
-        def run() -> None:
-            argv = [
-                "assets",
-                "--textures",
-                self.as_textures.get(),
-                "--items-dir",
-                self.as_items_dir.get(),
-                "--models-dir",
-                self.as_models_dir.get(),
-                "--lang",
-                self.as_lang.get().strip(),
-                "--namespace",
-                self.as_namespace.get().strip() or "modid",
-            ]
-            if self.as_overwrite_lang.get():
-                argv += ["--overwrite-lang"]
-            if self.as_dry_run.get():
-                argv += ["--dry-run"]
-
-            self._run_in_thread(argv)
-
-        ttk.Button(f, text="Run Assets", command=run).grid(
             row=7, column=0, sticky="w", pady=(10, 0)
         )
 

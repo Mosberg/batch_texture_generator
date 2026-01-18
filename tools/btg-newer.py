@@ -26,6 +26,8 @@ RGBA = Tuple[int, int, int, int]
 # ----------------------------
 # Hex utilities (RGBA only)
 # ----------------------------
+
+
 def hex6_to_hex8(s: str) -> str:
     s = s.strip()
     if len(s) == 7 and s.startswith("#"):
@@ -59,6 +61,8 @@ def color_dist2(a: RGBA, b: RGBA, *, alpha_weight: float = 0.25) -> float:
 # ----------------------------
 # Palette models
 # ----------------------------
+
+
 @dataclass(frozen=True, slots=True)
 class PaletteGroup:
     colors: List[str]
@@ -93,6 +97,8 @@ class PaletteItem:
 # ----------------------------
 # Template models
 # ----------------------------
+
+
 @dataclass(frozen=True, slots=True)
 class SlotSource:
     palette: str  # relative to palettes/
@@ -120,6 +126,8 @@ class TemplateDef:
 # ----------------------------
 # JSON helpers
 # ----------------------------
+
+
 def load_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -138,6 +146,8 @@ def _rel_posix(path: Path, base: Path) -> str:
 # ----------------------------
 # Schema validation (local refs)
 # ----------------------------
+
+
 def _build_registry(schema_dir: Path) -> Optional["Registry"]:
     if Registry is None or Resource is None:
         return None
@@ -172,8 +182,8 @@ def validate_palette_json(palette_path: Path, schema_dir: Path) -> None:
     for e in errors[:50]:
         loc = "$" + ("." + ".".join(map(str, e.path)) if e.path else "")
         lines.append(f"{loc}: {e.message}")
-    more = "" if len(errors) <= 50 else f"\n...and {len(errors) - 50} more"
 
+    more = "" if len(errors) <= 50 else f"\n...and {len(errors) - 50} more"
     raise ValueError(
         f"Schema validation failed for {palette_path.as_posix()}:\n"
         + "\n".join(lines)
@@ -184,6 +194,8 @@ def validate_palette_json(palette_path: Path, schema_dir: Path) -> None:
 # ----------------------------
 # Palette parsing / indexing
 # ----------------------------
+
+
 def parse_palette_file(palette_path: Path) -> List[PaletteItem]:
     raw = load_json(palette_path)
     if raw.get("schema") != "texture-palettes":
@@ -232,6 +244,8 @@ def load_all_palettes_index(
 # ----------------------------
 # Palette extraction
 # ----------------------------
+
+
 def extract_palette_from_png(
     png_path: Path, *, max_colors: int = 32, min_alpha: int = 1
 ) -> List[RGBA]:
@@ -259,16 +273,18 @@ def extract_palette_from_png(
         a = 255
         if a >= min_alpha:
             out.append((r, g, b, a))
+
     return out[:max_colors]
 
 
 # ----------------------------
 # Recolor (single palette swap)
 # ----------------------------
+
+
 def build_index_map(src: List[RGBA], dst: List[RGBA]) -> List[RGBA]:
     if not src or not dst:
         raise ValueError("Empty palette(s)")
-
     mapped: List[RGBA] = []
     for i in range(len(src)):
         t = 0.0 if len(src) == 1 else i / (len(src) - 1)
@@ -337,6 +353,8 @@ def recolor_png(
 # ----------------------------
 # Multi-material helpers
 # ----------------------------
+
+
 def _classify_pixels_for_slots(
     pixels: List[RGBA],
     slot_src_palettes: List[List[RGBA]],
@@ -384,6 +402,8 @@ def _classify_pixels_for_slots(
 # ----------------------------
 # Template parsing
 # ----------------------------
+
+
 def load_template_def(path: Path) -> TemplateDef:
     raw = load_json(path)
     if raw.get("schema") != "btg-template":
@@ -454,6 +474,8 @@ def _safe_format_pattern(pattern: str, mapping: Dict[str, str]) -> str:
 # ----------------------------
 # Auto-template heuristics
 # ----------------------------
+
+
 def palette_hit_score(template_colors: set[RGBA], palette: List[RGBA]) -> int:
     pal_set = set(palette)
     return sum(1 for c in template_colors if c in pal_set)
@@ -476,116 +498,10 @@ def infer_output_pattern(template_id: str, slots: List[str]) -> str:
 
 
 # ----------------------------
-# Assets generation (items/models/lang)
-# ----------------------------
-def _title_from_id(item_id: str) -> str:
-    # acacia_copper_barrel -> "Acacia Copper Barrel"
-    parts = [p for p in item_id.split("_") if p]
-    return " ".join(p[:1].upper() + p[1:] for p in parts)
-
-
-def _load_lang(path: Path) -> Dict[str, str]:
-    if not path.exists():
-        return {}
-    data = load_json(path)
-    if not isinstance(data, dict):
-        return {}
-    out: Dict[str, str] = {}
-    for k, v in data.items():
-        if isinstance(k, str):
-            out[k] = str(v)
-    return out
-
-
-def _save_lang(path: Path, data: Dict[str, str]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    ordered = dict(sorted(data.items(), key=lambda kv: kv[0]))
-    path.write_text(
-        json.dumps(ordered, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-    )
-
-
-def cmd_assets(args: argparse.Namespace) -> int:
-    textures_dir = Path(args.textures)
-    items_dir = Path(args.items_dir)
-    models_dir = Path(args.models_dir)
-    lang_path = Path(args.lang)
-
-    namespace = str(args.namespace).strip() or "modid"
-
-    if not textures_dir.exists():
-        raise SystemExit(f"Textures dir not found: {textures_dir.as_posix()}")
-
-    # IMPORTANT: only output/textures/item/*.png (non-recursive)
-    pngs = sorted(textures_dir.glob("*.png"))
-    if not pngs:
-        LOG.warning("No PNGs found in %s", textures_dir.as_posix())
-        return 0
-
-    lang = _load_lang(lang_path)
-
-    written_items = 0
-    written_models = 0
-    lang_changes = 0
-
-    for png in pngs:
-        item_id = png.stem
-        if not item_id:
-            continue
-
-        model_loc = f"{namespace}:item/{item_id}"
-
-        item_json = {
-            "model": {
-                "type": "minecraft:model",
-                "model": model_loc,
-            }
-        }
-        model_json = {
-            "parent": "item/generated",
-            "textures": {"layer0": model_loc},
-        }
-
-        item_path = items_dir / f"{item_id}.json"
-        model_path = models_dir / f"{item_id}.json"
-
-        if args.dry_run:
-            LOG.info("[DRY] Would write %s", item_path.as_posix())
-            LOG.info("[DRY] Would write %s", model_path.as_posix())
-        else:
-            save_json(item_path, item_json)
-            save_json(model_path, model_json)
-            written_items += 1
-            written_models += 1
-            LOG.info("Wrote %s", item_path.as_posix())
-            LOG.info("Wrote %s", model_path.as_posix())
-
-        lang_key = f"item.{namespace}.{item_id}"
-        lang_val = _title_from_id(item_id)
-
-        if args.overwrite_lang or (lang_key not in lang):
-            if lang.get(lang_key) != lang_val:
-                lang[lang_key] = lang_val
-                lang_changes += 1
-
-    if args.dry_run:
-        LOG.info("[DRY] Would update %s", lang_path.as_posix())
-    else:
-        _save_lang(lang_path, lang)
-        LOG.info("Updated %s (%d change(s))", lang_path.as_posix(), lang_changes)
-
-    LOG.info(
-        "Assets complete: %d item json, %d model json, %d lang change(s).",
-        written_items,
-        written_models,
-        lang_changes,
-    )
-    return 0
-
-
-# ----------------------------
 # Commands
 # ----------------------------
+
+
 def cmd_validate(args: argparse.Namespace) -> int:
     schema_dir = Path(args.schemas)
     palettes_dir = Path(args.palettes)
@@ -594,11 +510,10 @@ def cmd_validate(args: argparse.Namespace) -> int:
     for p in sorted(palettes_dir.rglob("*.texture-palettes.json")):
         try:
             validate_palette_json(p, schema_dir)
-            LOG.info("OK %s", p.as_posix())
+            LOG.info("OK   %s", p.as_posix())
         except Exception as e:
             ok = False
             LOG.error("FAIL %s\n%s", p.as_posix(), e)
-
     return 0 if ok else 2
 
 
@@ -611,8 +526,8 @@ def cmd_extract(args: argparse.Namespace) -> int:
     for png in sorted(textures_dir.rglob("*.png")):
         material = png.parent.name
         item_id = png.stem
-        out_path = palettes_dir / material / f"{item_id}.texture-palettes.json"
 
+        out_path = palettes_dir / material / f"{item_id}.texture-palettes.json"
         colors = extract_palette_from_png(
             png, max_colors=args.max_colors, min_alpha=args.min_alpha
         )
@@ -728,7 +643,6 @@ def cmd_normalize(args: argparse.Namespace) -> int:
 
     if not changed_any:
         LOG.info("No palette files required normalization.")
-
     return 0
 
 
@@ -738,7 +652,6 @@ def cmd_generate(args: argparse.Namespace) -> int:
     output_dir = Path(args.output)
 
     palette_index = load_all_palettes_index(palettes_dir)
-
     template_files = sorted(templates_dir.glob("*.btg-template.json"))
     if not template_files:
         LOG.warning("No templates found in %s", templates_dir.as_posix())
@@ -829,7 +742,6 @@ def cmd_generate(args: argparse.Namespace) -> int:
                 if p[3] < args.min_alpha:
                     out_pixels.append(p)
                     continue
-
                 si, ci = pixel_class[p]
                 dst = slot_dst_by_src[si][ci]
                 if not args.no_preserve_alpha:
@@ -854,13 +766,13 @@ def cmd_autotemplate(args: argparse.Namespace) -> int:
     out_dir = Path(args.out_dir).resolve() if args.out_dir else templates_dir
 
     palette_index = load_all_palettes_index(palettes_dir)
-
     pngs = sorted(templates_dir.glob("*.png"))
     if not pngs:
         LOG.warning("No PNG templates found in %s", templates_dir.as_posix())
         return 0
 
     written = 0
+
     for png in pngs:
         template_id = png.stem
 
@@ -912,6 +824,7 @@ def cmd_autotemplate(args: argparse.Namespace) -> int:
             continue
 
         out_pattern = infer_output_pattern(template_id, slot_names)
+
         data = {
             "schema": "btg-template",
             "version": 1,
@@ -935,6 +848,8 @@ def cmd_autotemplate(args: argparse.Namespace) -> int:
 # ----------------------------
 # CLI
 # ----------------------------
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="btg", description="Batch Texture Generator.")
     p.add_argument(
@@ -1060,45 +975,6 @@ def build_parser() -> argparse.ArgumentParser:
     )
     a.add_argument("--dry-run", action="store_true")
     a.set_defaults(func=cmd_autotemplate)
-
-    x = sub.add_parser(
-        "assets",
-        help="Generate output/items, output/models/item and output/lang/en_us.json from output/textures/item/*.png.",
-    )
-    x.add_argument(
-        "--textures",
-        default="output/textures/item",
-        help="Textures directory (non-recursive).",
-    )
-    x.add_argument(
-        "--items-dir", default="output/items", help="Output items directory."
-    )
-    x.add_argument(
-        "--models-dir",
-        default="output/models/item",
-        help="Output models/item directory.",
-    )
-    x.add_argument(
-        "--lang",
-        default="output/lang/en_us.json",
-        help="Language file to create/update.",
-    )
-    x.add_argument(
-        "--namespace",
-        default="modid",
-        help="Namespace/modid used in model/texture references.",
-    )
-    x.add_argument(
-        "--overwrite-lang",
-        action="store_true",
-        help="Overwrite existing lang keys if present.",
-    )
-    x.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Do not write any files; only log actions.",
-    )
-    x.set_defaults(func=cmd_assets)
 
     return p
 
