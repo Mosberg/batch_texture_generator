@@ -1,6 +1,6 @@
 {
-  "model": {
-    "type": "minecraft:model",
-    "model": "modid:item/acacia_copper_barrel"
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "modid:item/acacia_copper_barrel"
   }
 }

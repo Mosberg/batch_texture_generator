@@ -43,6 +43,123 @@ python tools/btg.py recolor ^
 - Palettes must use 8-digit RGBA hex: `#RRGGBBAA`.
 - Schemas live in `schemas/` and are mapped in `.vscode/settings.json`.
 
+## Output
+
+- Recolored textures are saved to `output/textures/item/`.
+- Generated item models are saved to `output/models/item/`.
+- Generated item JSONs are saved to `output/items/`.
+- Language entries are saved to `output/lang/en_us.json`.
+
+### output/items/
+
+```json
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "modid:item/acacia_copper_barrel"
+  }
+}
+```
+
+```json
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "modid:item/big_acacia_black_stained_glass_flask"
+  }
+}
+```
+
+```json
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "modid:item/copper_keg"
+  }
+}
+```
+
+```json
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "modid:item/medium_acacia_black_stained_glass_flask"
+  }
+}
+```
+
+```json
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "modid:item/small_acacia_black_stained_glass_flask"
+  }
+}
+```
+
+### output/models/item/
+
+```json
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "modid:item/acacia_copper_barrel"
+  }
+}
+```
+
+```json
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "modid:item/big_acacia_black_stained_glass_flask"
+  }
+}
+```
+
+```json
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "modid:item/copper_keg"
+  }
+}
+```
+
+```json
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "modid:item/medium_acacia_black_stained_glass_flask"
+  }
+}
+```
+
+```json
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "modid:item/small_acacia_black_stained_glass_flask"
+  }
+}
+```
+
+### output/lang/en_us.json
+
+```json
+{
+  "item.modid.acacia_copper_barrel": "Acacia Copper Barrel",
+
+  "item.modid.copper_keg": "Copper Keg",
+
+  "item.modid.small_acacia_black_stained_glass_flask": "Small Acacia Black Stained Glass Flask",
+
+  "item.modid.medium_acacia_black_stained_glass_flask": "Medium Acacia Black Stained Glass Flask",
+
+  "item.modid.big_acacia_black_stained_glass_flask": "Big Acacia Black Stained Glass Flask"
+}
+```
+
 ## Project Structure
 
 ```plaintext
