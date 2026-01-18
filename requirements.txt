@@ -1,3 +1,5 @@
 pillow
 jsonschema
 requests
+black
+flake8
