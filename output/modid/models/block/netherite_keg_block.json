@@ -1,0 +1,6 @@
+{
+  "parent": "modid:block/iron_keg_block",
+  "textures": {
+    "all": "modid:block/netherite_keg_block"
+  }
+}

@@ -741,7 +741,7 @@ def minecraft_item_definition(namespace: str, item_id: str) -> Dict[str, Any]:
 
 def minecraft_block_model_cube_all(namespace: str, block_id: str) -> Dict[str, Any]:
     return {
-        "parent": "minecraft:block/cube_all",
+        "parent": "modid:block/oak_iron_barrel_block",
         "textures": {"all": f"{namespace}:block/{block_id}"},
     }
 

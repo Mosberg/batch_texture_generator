@@ -1,0 +1,6 @@
+{
+  "parent": "modid:block/iron_keg_block",
+  "textures": {
+    "all": "modid:block/copper_exposed_keg_block"
+  }
+}

@@ -72,7 +72,7 @@ def minecraft_item_model_for_block(namespace: str, block_id: str) -> Dict[str, A
 
 def minecraft_block_model_cube_all(namespace: str, block_id: str) -> Dict[str, Any]:
     return {
-        "parent": "minecraft:block/cube_all",
+        "parent": "modid:block/oak_iron_barrel_block",
         "textures": {"all": f"{namespace}:block/{block_id}"},
     }
 
@@ -116,11 +116,7 @@ def infer_base_dir_from_textures_dir(textures_dir: Path) -> Optional[Path]:
 
 def sanitize_group_id(group_id: str) -> str:
     return (
-        group_id.strip()
-        .replace(" ", "_")
-        .replace("-", "_")
-        .replace("/", "_")
-        .lower()
+        group_id.strip().replace(" ", "_").replace("-", "_").replace("/", "_").lower()
     )
 
 
@@ -190,7 +186,9 @@ def cmd_block_assets(args) -> int:
         model_json: Dict[str, Any]
         model_template = model_templates_dir / f"{block_id}.json"
         if model_template.exists():
-            model_json = rewrite_namespace_strings(load_json(model_template), new_ns=namespace)
+            model_json = rewrite_namespace_strings(
+                load_json(model_template), new_ns=namespace
+            )
         else:
             model_json = minecraft_block_model_cube_all(namespace, block_id)
 
@@ -198,7 +196,9 @@ def cmd_block_assets(args) -> int:
         blockstate_json: Dict[str, Any]
         bs_template = blockstate_templates_dir / f"{block_id}.json"
         if bs_template.exists():
-            blockstate_json = rewrite_namespace_strings(load_json(bs_template), new_ns=namespace)
+            blockstate_json = rewrite_namespace_strings(
+                load_json(bs_template), new_ns=namespace
+            )
         else:
             blockstate_json = minecraft_blockstate_facing(namespace, block_id)
 
@@ -253,7 +253,9 @@ def cmd_block_assets(args) -> int:
                 lang_changes += 1
 
     if dry_run:
-        LOG.info("[DRY] Would update %s (%d change(s))", lang_path.as_posix(), lang_changes)
+        LOG.info(
+            "[DRY] Would update %s (%d change(s))", lang_path.as_posix(), lang_changes
+        )
     else:
         lang_path.parent.mkdir(parents=True, exist_ok=True)
         save_lang(lang_path, lang)

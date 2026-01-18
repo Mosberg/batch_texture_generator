@@ -1,0 +1,6 @@
+{
+  "parent": "modid:block/oak_iron_barrel_block",
+  "textures": {
+    "all": "modid:block/spruce_netherite_barrel_block"
+  }
+}
