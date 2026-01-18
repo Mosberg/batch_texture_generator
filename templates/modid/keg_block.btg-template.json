@@ -2,22 +2,13 @@
   "schema": "btg-template",
   "version": 1,
   "template": {
-    "id": "barrel",
-    "path": "templates/modid/item/barrel.png"
+    "id": "keg_block",
+    "path": "templates/modid/keg_block.png"
   },
   "output": {
-    "pattern": "{wood}_{metal}_barrel.png"
+    "pattern": "{metal}_keg_block.png"
   },
   "slots": [
-    {
-      "slot": "wood",
-      "material": "wood",
-      "source": {
-        "palette": "wood/oak.texture-palettes.json",
-        "id": "oak",
-        "group": "base"
-      }
-    },
     {
       "slot": "metal",
       "material": "metal",

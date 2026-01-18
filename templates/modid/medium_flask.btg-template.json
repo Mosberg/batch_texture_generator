@@ -2,11 +2,11 @@
   "schema": "btg-template",
   "version": 1,
   "template": {
-    "id": "barrel_block",
-    "path": "templates/modid/block/barrel_block.png"
+    "id": "medium_flask",
+    "path": "templates/modid/medium_flask.png"
   },
   "output": {
-    "pattern": "{wood}_{metal}_barrel_block.png"
+    "pattern": "medium_{wood}_{glass}_flask.png"
   },
   "slots": [
     {
@@ -19,11 +19,11 @@
       }
     },
     {
-      "slot": "metal",
-      "material": "metal",
+      "slot": "glass",
+      "material": "glass",
       "source": {
-        "palette": "metal/iron.texture-palettes.json",
-        "id": "iron",
+        "palette": "glass/glass.texture-palettes.json",
+        "id": "glass",
         "group": "base"
       }
     }

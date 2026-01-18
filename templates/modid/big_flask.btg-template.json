@@ -2,11 +2,11 @@
   "schema": "btg-template",
   "version": 1,
   "template": {
-    "id": "small_flask",
-    "path": "templates/modid/item/small_flask.png"
+    "id": "big_flask",
+    "path": "templates/modid/big_flask.png"
   },
   "output": {
-    "pattern": "small_{wood}_{glass}_flask.png"
+    "pattern": "big_{wood}_{glass}_flask.png"
   },
   "slots": [
     {

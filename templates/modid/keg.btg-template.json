@@ -3,7 +3,7 @@
   "version": 1,
   "template": {
     "id": "keg",
-    "path": "templates/modid/item/keg.png"
+    "path": "templates/modid/keg.png"
   },
   "output": {
     "pattern": "{metal}_keg.png"
