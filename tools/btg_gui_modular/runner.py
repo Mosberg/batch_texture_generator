@@ -6,7 +6,6 @@ import threading
 from dataclasses import dataclass
 from typing import Callable, Optional, Sequence
 
-
 LogSink = Callable[[str], None]
 ExitSink = Callable[[int], None]
 

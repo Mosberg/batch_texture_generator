@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import shlex
 import sys
 import tkinter as tk
 from pathlib import Path
@@ -52,7 +51,9 @@ class BTGGuiApp(ttk.Frame):
         self.ext_palettes_out = tk.StringVar(value="palettes")
         self.ext_max_colors = tk.StringVar(value="32")
         self.ext_min_alpha = tk.StringVar(value="1")
-        self.ext_schema_ref = tk.StringVar(value="../../schemas/texture-palettes.schema.json")
+        self.ext_schema_ref = tk.StringVar(
+            value="../../schemas/texture-palettes.schema.json"
+        )
         self.ext_generator_version = tk.StringVar(value="1.0.0")
 
         # Recolor
@@ -201,9 +202,9 @@ class BTGGuiApp(ttk.Frame):
             state="readonly",
         ).pack(side="left", padx=(6, 14))
 
-        ttk.Checkbutton(flags, text="Global dry-run", variable=self.global_dry_run).pack(
-            side="left"
-        )
+        ttk.Checkbutton(
+            flags, text="Global dry-run", variable=self.global_dry_run
+        ).pack(side="left")
 
         ttk.Button(flags, text="Save Config", command=self.save_config).pack(
             side="left", padx=(16, 6)
@@ -345,7 +346,9 @@ class BTGGuiApp(ttk.Frame):
         toolsm.add_command(label="Open Repo Root", command=self.open_repo_root)
         toolsm.add_command(label="Open Output Folder", command=self.open_output_folder)
         toolsm.add_separator()
-        toolsm.add_command(label="Copy Preview Command", command=self.copy_preview_command)
+        toolsm.add_command(
+            label="Copy Preview Command", command=self.copy_preview_command
+        )
         mb.add_cascade(label="Tools", menu=toolsm)
 
         helpm = tk.Menu(mb, tearoff=False)
@@ -387,7 +390,12 @@ class BTGGuiApp(ttk.Frame):
         parent.columnconfigure(1, weight=1)
 
     def _row_text(
-        self, parent: ttk.Frame, row: int, label: str, var: tk.StringVar, width: int = 70
+        self,
+        parent: ttk.Frame,
+        row: int,
+        label: str,
+        var: tk.StringVar,
+        width: int = 70,
     ) -> None:
         ttk.Label(parent, text=label).grid(row=row, column=0, sticky="w")
         ttk.Entry(parent, textvariable=var, width=width).grid(
@@ -401,7 +409,9 @@ class BTGGuiApp(ttk.Frame):
         f = ttk.Frame(self.tab_validate, padding=10)
         f.pack(fill="x")
 
-        self._row_dir(f, 0, "Schemas dir:", self.val_schemas, "Select schemas directory")
+        self._row_dir(
+            f, 0, "Schemas dir:", self.val_schemas, "Select schemas directory"
+        )
         self._row_dir(
             f, 1, "Palettes dir:", self.val_palettes, "Select palettes directory"
         )
@@ -413,7 +423,9 @@ class BTGGuiApp(ttk.Frame):
     def _build_normalize_tab(self) -> None:
         f = ttk.Frame(self.tab_normalize, padding=10)
         f.pack(fill="x")
-        self._row_dir(f, 0, "Palettes dir:", self.norm_palettes, "Select palettes directory")
+        self._row_dir(
+            f, 0, "Palettes dir:", self.norm_palettes, "Select palettes directory"
+        )
         ttk.Button(f, text="Run Normalize", command=self.run_normalize).grid(
             row=1, column=0, sticky="w", pady=(10, 0)
         )
@@ -422,9 +434,15 @@ class BTGGuiApp(ttk.Frame):
         f = ttk.Frame(self.tab_extract, padding=10)
         f.pack(fill="x")
 
-        self._row_dir(f, 0, "Textures dir:", self.ext_textures, "Select textures directory")
         self._row_dir(
-            f, 1, "Palettes output dir:", self.ext_palettes_out, "Select output palettes directory"
+            f, 0, "Textures dir:", self.ext_textures, "Select textures directory"
+        )
+        self._row_dir(
+            f,
+            1,
+            "Palettes output dir:",
+            self.ext_palettes_out,
+            "Select output palettes directory",
         )
         self._row_text(f, 2, "Max colors:", self.ext_max_colors, width=12)
         self._row_text(f, 3, "Min alpha:", self.ext_min_alpha, width=12)
@@ -439,7 +457,9 @@ class BTGGuiApp(ttk.Frame):
         f = ttk.Frame(self.tab_recolor, padding=10)
         f.pack(fill="x")
 
-        self._row_dir(f, 0, "Palettes dir:", self.rec_palettes_dir, "Select palettes directory")
+        self._row_dir(
+            f, 0, "Palettes dir:", self.rec_palettes_dir, "Select palettes directory"
+        )
         self._row_text(f, 1, "Source palette (rel):", self.rec_src_palette, width=70)
         self._row_text(f, 2, "Target palette (rel):", self.rec_dst_palette, width=70)
         self._row_text(f, 3, "Source id:", self.rec_src_id, width=20)
@@ -449,19 +469,19 @@ class BTGGuiApp(ttk.Frame):
         self._row_dir(f, 6, "Input dir:", self.rec_input, "Select input directory")
         self._row_dir(f, 7, "Output dir:", self.rec_output, "Select output directory")
 
-        ttk.Checkbutton(f, text="No recursive input scan", variable=self.rec_no_recursive).grid(
-            row=8, column=0, sticky="w", pady=(10, 0)
-        )
+        ttk.Checkbutton(
+            f, text="No recursive input scan", variable=self.rec_no_recursive
+        ).grid(row=8, column=0, sticky="w", pady=(10, 0))
 
         self._row_text(f, 9, "Min alpha:", self.rec_min_alpha, width=12)
         self._row_text(f, 10, "Alpha weight:", self.rec_alpha_weight, width=12)
 
-        ttk.Checkbutton(f, text="Preserve original alpha", variable=self.rec_preserve_alpha).grid(
-            row=11, column=0, sticky="w", pady=(8, 0)
-        )
-        ttk.Checkbutton(f, text="Exact-match first", variable=self.rec_exact_first).grid(
-            row=12, column=0, sticky="w", pady=(6, 0)
-        )
+        ttk.Checkbutton(
+            f, text="Preserve original alpha", variable=self.rec_preserve_alpha
+        ).grid(row=11, column=0, sticky="w", pady=(8, 0))
+        ttk.Checkbutton(
+            f, text="Exact-match first", variable=self.rec_exact_first
+        ).grid(row=12, column=0, sticky="w", pady=(6, 0))
 
         ttk.Button(f, text="Run Recolor", command=self.run_recolor).grid(
             row=13, column=0, sticky="w", pady=(10, 0)
@@ -471,41 +491,53 @@ class BTGGuiApp(ttk.Frame):
         f = ttk.Frame(self.tab_legacy, padding=10)
         f.pack(fill="x")
 
-        self._row_dir(f, 0, "Palettes dir:", self.leg_palettes_dir, "Select palettes directory")
-        self._row_dir(f, 1, "Templates dir:", self.leg_templates_dir, "Select templates directory")
-        self._row_dir(f, 2, "Output root:", self.leg_output_root, "Select output root directory")
+        self._row_dir(
+            f, 0, "Palettes dir:", self.leg_palettes_dir, "Select palettes directory"
+        )
+        self._row_dir(
+            f, 1, "Templates dir:", self.leg_templates_dir, "Select templates directory"
+        )
+        self._row_dir(
+            f, 2, "Output root:", self.leg_output_root, "Select output root directory"
+        )
         self._row_text(f, 3, "Namespace/modid:", self.leg_namespace, width=20)
         self._row_text(f, 4, "Lang file:", self.leg_lang_file, width=20)
 
         ttk.Checkbutton(
-            f, text="Disable output/<namespace>/... tree", variable=self.leg_no_modid_tree
+            f,
+            text="Disable output/<namespace>/... tree",
+            variable=self.leg_no_modid_tree,
         ).grid(row=5, column=0, sticky="w", pady=(10, 0))
-        ttk.Checkbutton(f, text="Disable flat output/... tree", variable=self.leg_no_flat_tree).grid(
-            row=6, column=0, sticky="w", pady=(6, 0)
-        )
+        ttk.Checkbutton(
+            f, text="Disable flat output/... tree", variable=self.leg_no_flat_tree
+        ).grid(row=6, column=0, sticky="w", pady=(6, 0))
 
-        ttk.Button(f, text="Run Legacy recolor-templates", command=self.run_legacy_templates).grid(
-            row=7, column=0, sticky="w", pady=(10, 0)
-        )
+        ttk.Button(
+            f, text="Run Legacy recolor-templates", command=self.run_legacy_templates
+        ).grid(row=7, column=0, sticky="w", pady=(10, 0))
 
     def _build_generate_tab(self) -> None:
         f = ttk.Frame(self.tab_generate, padding=10)
         f.pack(fill="x")
 
-        self._row_dir(f, 0, "Templates dir:", self.gen_templates, "Select templates directory")
-        self._row_dir(f, 1, "Palettes dir:", self.gen_palettes, "Select palettes directory")
+        self._row_dir(
+            f, 0, "Templates dir:", self.gen_templates, "Select templates directory"
+        )
+        self._row_dir(
+            f, 1, "Palettes dir:", self.gen_palettes, "Select palettes directory"
+        )
         self._row_dir(f, 2, "Output dir:", self.gen_output, "Select output directory")
 
         self._row_text(f, 3, "Min alpha:", self.gen_min_alpha, width=12)
         self._row_text(f, 4, "Alpha weight:", self.gen_alpha_weight, width=12)
         self._row_text(f, 5, "Limit (blank=none):", self.gen_limit, width=12)
 
-        ttk.Checkbutton(f, text="Preserve alpha", variable=self.gen_preserve_alpha).grid(
-            row=6, column=0, sticky="w", pady=(10, 0)
-        )
-        ttk.Checkbutton(f, text="Exact-match first", variable=self.gen_exact_first).grid(
-            row=7, column=0, sticky="w", pady=(6, 0)
-        )
+        ttk.Checkbutton(
+            f, text="Preserve alpha", variable=self.gen_preserve_alpha
+        ).grid(row=6, column=0, sticky="w", pady=(10, 0))
+        ttk.Checkbutton(
+            f, text="Exact-match first", variable=self.gen_exact_first
+        ).grid(row=7, column=0, sticky="w", pady=(6, 0))
 
         ttk.Button(f, text="Run Generate", command=self.run_generate).grid(
             row=8, column=0, sticky="w", pady=(10, 0)
@@ -515,8 +547,16 @@ class BTGGuiApp(ttk.Frame):
         f = ttk.Frame(self.tab_autotemplate, padding=10)
         f.pack(fill="x")
 
-        self._row_dir(f, 0, "Templates dir (*.png):", self.at_templates, "Select templates directory")
-        self._row_dir(f, 1, "Palettes dir:", self.at_palettes, "Select palettes directory")
+        self._row_dir(
+            f,
+            0,
+            "Templates dir (*.png):",
+            self.at_templates,
+            "Select templates directory",
+        )
+        self._row_dir(
+            f, 1, "Palettes dir:", self.at_palettes, "Select palettes directory"
+        )
         self._row_text(f, 2, "Out dir (blank=templates):", self.at_out_dir, width=70)
         self._row_text(f, 3, "Materials (comma list):", self.at_materials, width=70)
         self._row_text(f, 4, "Min alpha:", self.at_min_alpha, width=12)
@@ -530,18 +570,28 @@ class BTGGuiApp(ttk.Frame):
         f = ttk.Frame(self.tab_assets, padding=10)
         f.pack(fill="x")
 
-        self._row_dir(f, 0, "Textures dir:", self.as_textures, "Select textures directory")
-        ttk.Checkbutton(f, text="Recurse textures dir", variable=self.as_recursive).grid(
-            row=1, column=0, sticky="w", pady=(6, 0)
+        self._row_dir(
+            f, 0, "Textures dir:", self.as_textures, "Select textures directory"
         )
-        self._row_dir(f, 2, "Items dir:", self.as_items_dir, "Select items output directory")
-        self._row_dir(f, 3, "Models/item dir:", self.as_models_dir, "Select models output directory")
+        ttk.Checkbutton(
+            f, text="Recurse textures dir", variable=self.as_recursive
+        ).grid(row=1, column=0, sticky="w", pady=(6, 0))
+        self._row_dir(
+            f, 2, "Items dir:", self.as_items_dir, "Select items output directory"
+        )
+        self._row_dir(
+            f,
+            3,
+            "Models/item dir:",
+            self.as_models_dir,
+            "Select models output directory",
+        )
         self._row_text(f, 4, "Lang file:", self.as_lang, width=70)
         self._row_text(f, 5, "Namespace/modid:", self.as_namespace, width=20)
 
-        ttk.Checkbutton(f, text="Overwrite existing lang keys", variable=self.as_overwrite_lang).grid(
-            row=6, column=0, sticky="w", pady=(10, 0)
-        )
+        ttk.Checkbutton(
+            f, text="Overwrite existing lang keys", variable=self.as_overwrite_lang
+        ).grid(row=6, column=0, sticky="w", pady=(10, 0))
 
         ttk.Button(f, text="Run Assets", command=self.run_assets).grid(
             row=7, column=0, sticky="w", pady=(10, 0)
@@ -560,7 +610,9 @@ class BTGGuiApp(ttk.Frame):
 
     def _browse_file(self, var: tk.StringVar, title: str, filetypes) -> None:
         repo = Path(self.repo_root.get()).resolve()
-        p = filedialog.askopenfilename(title=title, initialdir=str(repo), filetypes=filetypes)
+        p = filedialog.askopenfilename(
+            title=title, initialdir=str(repo), filetypes=filetypes
+        )
         if not p:
             return
         var.set(try_rel(repo, Path(p)))
@@ -573,7 +625,11 @@ class BTGGuiApp(ttk.Frame):
         # Show the last selected command if available, otherwise default to validate.
         if self._last_cmd is None:
             self._last_cmd = self._build_validate_cmd()
-        self.cmd_preview.set(commands.format_command_for_preview(self._last_cmd, Path(self.repo_root.get()).resolve()))
+        self.cmd_preview.set(
+            commands.format_command_for_preview(
+                self._last_cmd, Path(self.repo_root.get()).resolve()
+            )
+        )
 
     def _run(self, cmd: list[str]) -> None:
         self._last_cmd = cmd
@@ -722,7 +778,10 @@ class BTGGuiApp(ttk.Frame):
                 "log_level": self.log_level.get(),
                 "dry_run": bool(self.global_dry_run.get()),
             },
-            "validate": {"schemas": self.val_schemas.get(), "palettes": self.val_palettes.get()},
+            "validate": {
+                "schemas": self.val_schemas.get(),
+                "palettes": self.val_palettes.get(),
+            },
             "normalize": {"palettes": self.norm_palettes.get()},
             "extract": {
                 "textures": self.ext_textures.get(),
@@ -802,44 +861,78 @@ class BTGGuiApp(ttk.Frame):
 
         ext = data.get("extract") or {}
         self.ext_textures.set(str(ext.get("textures") or self.ext_textures.get()))
-        self.ext_palettes_out.set(str(ext.get("palettes_out") or self.ext_palettes_out.get()))
+        self.ext_palettes_out.set(
+            str(ext.get("palettes_out") or self.ext_palettes_out.get())
+        )
         self.ext_max_colors.set(str(ext.get("max_colors") or self.ext_max_colors.get()))
         self.ext_min_alpha.set(str(ext.get("min_alpha") or self.ext_min_alpha.get()))
         self.ext_schema_ref.set(str(ext.get("schema_ref") or self.ext_schema_ref.get()))
-        self.ext_generator_version.set(str(ext.get("generator_version") or self.ext_generator_version.get()))
+        self.ext_generator_version.set(
+            str(ext.get("generator_version") or self.ext_generator_version.get())
+        )
 
         rec = data.get("recolor") or {}
-        self.rec_palettes_dir.set(str(rec.get("palettes_dir") or self.rec_palettes_dir.get()))
-        self.rec_src_palette.set(str(rec.get("src_palette") or self.rec_src_palette.get()))
-        self.rec_dst_palette.set(str(rec.get("dst_palette") or self.rec_dst_palette.get()))
+        self.rec_palettes_dir.set(
+            str(rec.get("palettes_dir") or self.rec_palettes_dir.get())
+        )
+        self.rec_src_palette.set(
+            str(rec.get("src_palette") or self.rec_src_palette.get())
+        )
+        self.rec_dst_palette.set(
+            str(rec.get("dst_palette") or self.rec_dst_palette.get())
+        )
         self.rec_src_id.set(str(rec.get("src_id") or self.rec_src_id.get()))
         self.rec_dst_id.set(str(rec.get("dst_id") or self.rec_dst_id.get()))
         self.rec_group.set(str(rec.get("group") or self.rec_group.get()))
         self.rec_input.set(str(rec.get("input") or self.rec_input.get()))
         self.rec_output.set(str(rec.get("output") or self.rec_output.get()))
-        self.rec_no_recursive.set(bool(rec.get("no_recursive", self.rec_no_recursive.get())))
+        self.rec_no_recursive.set(
+            bool(rec.get("no_recursive", self.rec_no_recursive.get()))
+        )
         self.rec_min_alpha.set(str(rec.get("min_alpha") or self.rec_min_alpha.get()))
-        self.rec_alpha_weight.set(str(rec.get("alpha_weight") or self.rec_alpha_weight.get()))
-        self.rec_preserve_alpha.set(bool(rec.get("preserve_alpha", self.rec_preserve_alpha.get())))
-        self.rec_exact_first.set(bool(rec.get("exact_first", self.rec_exact_first.get())))
+        self.rec_alpha_weight.set(
+            str(rec.get("alpha_weight") or self.rec_alpha_weight.get())
+        )
+        self.rec_preserve_alpha.set(
+            bool(rec.get("preserve_alpha", self.rec_preserve_alpha.get()))
+        )
+        self.rec_exact_first.set(
+            bool(rec.get("exact_first", self.rec_exact_first.get()))
+        )
 
         leg = data.get("legacy_templates") or {}
-        self.leg_palettes_dir.set(str(leg.get("palettes_dir") or self.leg_palettes_dir.get()))
-        self.leg_templates_dir.set(str(leg.get("templates_dir") or self.leg_templates_dir.get()))
-        self.leg_output_root.set(str(leg.get("output_root") or self.leg_output_root.get()))
+        self.leg_palettes_dir.set(
+            str(leg.get("palettes_dir") or self.leg_palettes_dir.get())
+        )
+        self.leg_templates_dir.set(
+            str(leg.get("templates_dir") or self.leg_templates_dir.get())
+        )
+        self.leg_output_root.set(
+            str(leg.get("output_root") or self.leg_output_root.get())
+        )
         self.leg_namespace.set(str(leg.get("namespace") or self.leg_namespace.get()))
         self.leg_lang_file.set(str(leg.get("lang_file") or self.leg_lang_file.get()))
-        self.leg_no_modid_tree.set(bool(leg.get("no_modid_tree", self.leg_no_modid_tree.get())))
-        self.leg_no_flat_tree.set(bool(leg.get("no_flat_tree", self.leg_no_flat_tree.get())))
+        self.leg_no_modid_tree.set(
+            bool(leg.get("no_modid_tree", self.leg_no_modid_tree.get()))
+        )
+        self.leg_no_flat_tree.set(
+            bool(leg.get("no_flat_tree", self.leg_no_flat_tree.get()))
+        )
 
         gen = data.get("generate") or {}
         self.gen_templates.set(str(gen.get("templates") or self.gen_templates.get()))
         self.gen_palettes.set(str(gen.get("palettes") or self.gen_palettes.get()))
         self.gen_output.set(str(gen.get("output") or self.gen_output.get()))
         self.gen_min_alpha.set(str(gen.get("min_alpha") or self.gen_min_alpha.get()))
-        self.gen_alpha_weight.set(str(gen.get("alpha_weight") or self.gen_alpha_weight.get()))
-        self.gen_preserve_alpha.set(bool(gen.get("preserve_alpha", self.gen_preserve_alpha.get())))
-        self.gen_exact_first.set(bool(gen.get("exact_first", self.gen_exact_first.get())))
+        self.gen_alpha_weight.set(
+            str(gen.get("alpha_weight") or self.gen_alpha_weight.get())
+        )
+        self.gen_preserve_alpha.set(
+            bool(gen.get("preserve_alpha", self.gen_preserve_alpha.get()))
+        )
+        self.gen_exact_first.set(
+            bool(gen.get("exact_first", self.gen_exact_first.get()))
+        )
         self.gen_limit.set(str(gen.get("limit") or self.gen_limit.get()))
 
         at = data.get("autotemplate") or {}
@@ -857,7 +950,9 @@ class BTGGuiApp(ttk.Frame):
         self.as_models_dir.set(str(ax.get("models_dir") or self.as_models_dir.get()))
         self.as_lang.set(str(ax.get("lang") or self.as_lang.get()))
         self.as_namespace.set(str(ax.get("namespace") or self.as_namespace.get()))
-        self.as_overwrite_lang.set(bool(ax.get("overwrite_lang", self.as_overwrite_lang.get())))
+        self.as_overwrite_lang.set(
+            bool(ax.get("overwrite_lang", self.as_overwrite_lang.get()))
+        )
 
     def _load_config(self) -> None:
         data = load_config_best_effort(Path(self.repo_root.get()).resolve())

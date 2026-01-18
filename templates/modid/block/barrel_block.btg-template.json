@@ -3,7 +3,7 @@
   "version": 1,
   "template": {
     "id": "barrel_block",
-    "path": "textures_input/barrel_block.png"
+    "path": "input/modid/block/barrel_block.png"
   },
   "output": {
     "pattern": "{wood}_{metal}_barrel_block.png"

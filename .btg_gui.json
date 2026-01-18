@@ -1,0 +1,79 @@
+{
+  "app": {
+    "name": "BTG GUI",
+    "version": "3.0.0"
+  },
+  "project": {
+    "repo_root": "D:\\Python\\batch_texture_generator",
+    "btg_script": "tools/btg.py",
+    "python_exe": "D:\\Python\\batch_texture_generator\\.btg\\Scripts\\python.exe",
+    "log_level": "INFO",
+    "dry_run": false
+  },
+  "validate": {
+    "schemas": "schemas",
+    "palettes": "palettes"
+  },
+  "normalize": {
+    "palettes": "palettes"
+  },
+  "extract": {
+    "textures": "textures",
+    "palettes_out": "palettes",
+    "max_colors": "32",
+    "min_alpha": "1",
+    "schema_ref": "../../schemas/texture-palettes.schema.json",
+    "generator_version": "1.0.0"
+  },
+  "recolor": {
+    "palettes_dir": "palettes",
+    "src_palette": "wood/oak.texture-palettes.json",
+    "dst_palette": "metal/iron.texture-palettes.json",
+    "src_id": "oak",
+    "dst_id": "iron",
+    "group": "",
+    "input": "textures_input",
+    "output": "output/textures/item",
+    "no_recursive": false,
+    "min_alpha": "1",
+    "alpha_weight": "0.25",
+    "preserve_alpha": true,
+    "exact_first": true
+  },
+  "legacy_templates": {
+    "palettes_dir": "palettes",
+    "templates_dir": "textures_input",
+    "output_root": "output",
+    "namespace": "modid",
+    "lang_file": "en_us.json",
+    "no_modid_tree": false,
+    "no_flat_tree": false
+  },
+  "generate": {
+    "templates": "templates",
+    "palettes": "palettes",
+    "output": "output/textures/item",
+    "min_alpha": "1",
+    "alpha_weight": "0.25",
+    "preserve_alpha": true,
+    "exact_first": true,
+    "limit": ""
+  },
+  "autotemplate": {
+    "templates": "textures_input",
+    "palettes": "palettes",
+    "out_dir": "",
+    "materials": "wood,metal,glass",
+    "min_alpha": "1",
+    "min_hits": "2"
+  },
+  "assets": {
+    "textures": "output/textures/item",
+    "recursive": false,
+    "items_dir": "output/items",
+    "models_dir": "output/models/item",
+    "lang": "output/lang/en_us.json",
+    "namespace": "modid",
+    "overwrite_lang": false
+  }
+}
