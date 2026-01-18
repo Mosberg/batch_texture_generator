@@ -5,7 +5,7 @@ import json
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Any, Dict, List, Optional, Tuple
 
 from PIL import Image
 from jsonschema import Draft202012Validator
@@ -14,13 +14,27 @@ try:
     # jsonschema >= 4 uses referencing for robust ref resolution
     from referencing import Registry, Resource
 except Exception:  # pragma: no cover
-    Registry = None  # type: ignore
-    Resource = None  # type: ignore
+    Registry = None  # type: ignore[assignment]
+    Resource = None  # type: ignore[assignment]
 
 
 LOG = logging.getLogger("btg")
 
 RGBA = Tuple[int, int, int, int]
+
+
+# ----------------------------
+# Paths / config
+# ----------------------------
+
+
+def _norm_slash(p: str) -> str:
+    return p.replace("\\", "/")
+
+
+def _repo_root_from_tools_dir(tools_dir: Path) -> Path:
+    # tools/ is expected to live in repo root: <root>/tools/btg.py
+    return tools_dir.parent
 
 
 # ----------------------------
@@ -67,7 +81,7 @@ def color_dist2(a: RGBA, b: RGBA, *, alpha_weight: float = 0.25) -> float:
 # ----------------------------
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class PaletteGroup:
     colors: List[str]
     comment: str = ""
@@ -76,7 +90,7 @@ class PaletteGroup:
         return [parse_hex8(c) for c in self.colors]
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class PaletteItem:
     id: str
     name: str
@@ -86,9 +100,10 @@ class PaletteItem:
     metadata: Optional[dict] = None
 
     def group(self, group_id: str) -> PaletteGroup:
-        if group_id in self.groups:
+        try:
             return self.groups[group_id]
-        raise KeyError(f"Group '{group_id}' not found for item '{self.id}'")
+        except KeyError as e:
+            raise KeyError(f"Group '{group_id}' not found for item '{self.id}'") from e
 
     def default_group(self) -> Tuple[str, PaletteGroup]:
         if "base" in self.groups:
@@ -108,7 +123,9 @@ def load_json(path: Path) -> dict:
 
 def save_json(path: Path, data: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
 
 
 # ----------------------------
@@ -116,7 +133,7 @@ def save_json(path: Path, data: dict) -> None:
 # ----------------------------
 
 
-def _build_registry(schema_dir: Path) -> Optional[Any]:
+def _build_registry(schema_dir: Path) -> Optional["Registry"]:
     if Registry is None or Resource is None:
         return None
 
@@ -141,23 +158,22 @@ def validate_palette_json(palette_path: Path, schema_dir: Path) -> None:
     instance = load_json(palette_path)
 
     registry = _build_registry(schema_dir)
-
-    if registry is not None:
-        validator = Draft202012Validator(schema, registry=registry)
-    else:
-        # Fallback: still works in many cases, but registry is preferred.
-        validator = Draft202012Validator(schema)
+    validator = (
+        Draft202012Validator(schema, registry=registry)
+        if registry is not None
+        else Draft202012Validator(schema)
+    )
 
     errors = sorted(validator.iter_errors(instance), key=lambda e: list(e.path))
     if not errors:
         return
 
     lines: List[str] = []
-    for e in errors[:30]:
+    for e in errors[:50]:
         loc = "$" + ("." + ".".join(map(str, e.path)) if e.path else "")
         lines.append(f"{loc}: {e.message}")
 
-    more = "" if len(errors) <= 30 else f"\n...and {len(errors) - 30} more"
+    more = "" if len(errors) <= 50 else f"\n...and {len(errors) - 50} more"
     raise ValueError(
         f"Schema validation failed for {palette_path.as_posix()}:\n"
         + "\n".join(lines)
@@ -173,18 +189,18 @@ def validate_palette_json(palette_path: Path, schema_dir: Path) -> None:
 def parse_palette_file(palette_path: Path) -> List[PaletteItem]:
     raw = load_json(palette_path)
     if raw.get("schema") != "texture-palettes":
-        raise ValueError(f"{palette_path}: schema must be 'texture-palettes'")
+        raise ValueError(f"{palette_path}: 'schema' must be 'texture-palettes'")
 
-    items: List[PaletteItem] = []
+    out: List[PaletteItem] = []
     for it in raw.get("items", []):
         groups: Dict[str, PaletteGroup] = {}
         for gid, g in (it.get("groups") or {}).items():
             groups[str(gid)] = PaletteGroup(
-                colors=[str(c) for c in (g.get("colors") or [])],
+                colors=[hex6_to_hex8(str(c)) for c in (g.get("colors") or [])],
                 comment=str(g.get("comment") or ""),
             )
 
-        items.append(
+        out.append(
             PaletteItem(
                 id=str(it["id"]),
                 name=str(it["name"]),
@@ -195,7 +211,7 @@ def parse_palette_file(palette_path: Path) -> List[PaletteItem]:
             )
         )
 
-    return items
+    return out
 
 
 # ----------------------------
@@ -209,12 +225,18 @@ def extract_palette_from_png(
     max_colors: int = 32,
     min_alpha: int = 1,
 ) -> List[RGBA]:
-    img = Image.open(png_path).convert("RGBA")
 
-    # Fast deterministic palette approximation for pixel art.
+    img = Image.open(png_path).convert("RGBA")
+    pixels = list(img.getdata())
+
+    uniq = sorted({p for p in pixels if p[3] >= min_alpha})
+    if 0 < len(uniq) <= max_colors:
+        return uniq
+
+    # Deterministic palette approximation for larger/gradient images.
     q = img.quantize(colors=max_colors, method=Image.Quantize.MEDIANCUT)
     pal = q.getpalette() or []
-    used = sorted(set(list(q.getdata())))
+    used = sorted(set(q.getdata()))
 
     out: List[RGBA] = []
     for idx in used:
@@ -225,7 +247,6 @@ def extract_palette_from_png(
         if a >= min_alpha:
             out.append((r, g, b, a))
 
-    # Ensure deterministic size limit
     return out[:max_colors]
 
 
@@ -254,13 +275,17 @@ def recolor_png(
     alpha_weight: float = 0.25,
     preserve_alpha: bool = True,
     min_alpha: int = 1,
+    exact_first: bool = True,
 ) -> None:
     img = Image.open(input_png).convert("RGBA")
     pixels: List[RGBA] = list(img.getdata())
 
     dst_by_src_index = build_index_map(src_palette, dst_palette)
+    exact_map: Dict[RGBA, RGBA] = {}
+    if exact_first:
+        for i, c in enumerate(src_palette):
+            exact_map[c] = dst_by_src_index[i]
 
-    # Cache: exact pixel -> mapped pixel (big speedup on repeated colors)
     cache: Dict[RGBA, RGBA] = {}
 
     def map_pixel(p: RGBA) -> RGBA:
@@ -268,6 +293,15 @@ def recolor_png(
             return p
         if p in cache:
             return cache[p]
+
+        if exact_first:
+            m = exact_map.get(p)
+            if m is not None:
+                dst = m
+                if preserve_alpha:
+                    dst = (dst[0], dst[1], dst[2], p[3])
+                cache[p] = dst
+                return dst
 
         best_i = 0
         best_d = float("inf")
@@ -284,9 +318,7 @@ def recolor_png(
         cache[p] = dst
         return dst
 
-    out = [map_pixel(p) for p in pixels]
-    img.putdata(out)
-
+    img.putdata([map_pixel(p) for p in pixels])
     output_png.parent.mkdir(parents=True, exist_ok=True)
     img.save(output_png)
 
@@ -314,11 +346,12 @@ def normalize_palette_json(path: Path) -> bool:
 
     if changed:
         save_json(path, raw)
+
     return changed
 
 
 # ----------------------------
-# CLI
+# Commands
 # ----------------------------
 
 
@@ -327,7 +360,7 @@ def cmd_validate(args: argparse.Namespace) -> int:
     palettes_dir = Path(args.palettes)
 
     ok = True
-    for p in palettes_dir.rglob("*.texture-palettes.json"):
+    for p in sorted(palettes_dir.rglob("*.texture-palettes.json")):
         try:
             validate_palette_json(p, schema_dir)
             LOG.info("OK   %s", p.as_posix())
@@ -341,8 +374,10 @@ def cmd_validate(args: argparse.Namespace) -> int:
 def cmd_extract(args: argparse.Namespace) -> int:
     textures_dir = Path(args.textures)
     palettes_dir = Path(args.palettes)
+    schema_rel = args.schema_ref or "../../schemas/texture-palettes.schema.json"
 
-    for png in textures_dir.rglob("*.png"):
+    count = 0
+    for png in sorted(textures_dir.rglob("*.png")):
         material = png.parent.name
         item_id = png.stem
 
@@ -353,16 +388,16 @@ def cmd_extract(args: argparse.Namespace) -> int:
             png, max_colors=args.max_colors, min_alpha=args.min_alpha
         )
 
-        payload = {
-            "$schema": "../../schemas/texture-palettes.schema.json",
+        payload: Dict[str, Any] = {
+            "$schema": schema_rel,
             "schema": "texture-palettes",
             "version": 1,
-            "generator": {"name": "btg", "version": "1.0.0"},
+            "generator": {"name": "btg", "version": args.generator_version},
             "items": [
                 {
                     "id": item_id,
                     "name": item_id.replace("_", " ").title(),
-                    "path": f"textures/{material}/{png.name}".replace("\\", "/"),
+                    "path": _norm_slash(f"textures/{material}/{png.name}"),
                     "material": material,
                     "groups": {
                         "base": {
@@ -376,7 +411,9 @@ def cmd_extract(args: argparse.Namespace) -> int:
 
         save_json(out_path, payload)
         LOG.info("Wrote %s", out_path.as_posix())
+        count += 1
 
+    LOG.info("Extract complete (%d files).", count)
     return 0
 
 
@@ -390,6 +427,7 @@ def cmd_recolor(args: argparse.Namespace) -> int:
 
     src_item = next((i for i in src_items if i.id == args.src_id), None)
     dst_item = next((i for i in dst_items if i.id == args.dst_id), None)
+
     if not src_item:
         raise SystemExit(
             f"Source id '{args.src_id}' not found in {src_file.as_posix()}"
@@ -428,6 +466,7 @@ def cmd_recolor(args: argparse.Namespace) -> int:
             alpha_weight=args.alpha_weight,
             preserve_alpha=not args.no_preserve_alpha,
             min_alpha=args.min_alpha,
+            exact_first=not args.no_exact_first,
         )
         LOG.info("Recolored %s -> %s", f.as_posix(), out_path.as_posix())
 
@@ -438,21 +477,26 @@ def cmd_normalize(args: argparse.Namespace) -> int:
     palettes_dir = Path(args.palettes)
     changed_any = False
 
-    for p in palettes_dir.rglob("*.texture-palettes.json"):
-        changed = normalize_palette_json(p)
-        if changed:
+    for p in sorted(palettes_dir.rglob("*.texture-palettes.json")):
+        if normalize_palette_json(p):
             changed_any = True
             LOG.info("Normalized %s", p.as_posix())
 
     if not changed_any:
         LOG.info("No palette files required normalization.")
+
     return 0
+
+
+# ----------------------------
+# CLI
+# ----------------------------
 
 
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="btg",
-        description="Batch Texture Generator (validate/extract/recolor palettes).",
+        description="Batch Texture Generator (validate/extract/recolor/normalize palettes).",
     )
     p.add_argument(
         "--log", default="INFO", help="Log level (DEBUG, INFO, WARNING, ERROR)."
@@ -469,7 +513,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     e = sub.add_parser(
         "extract",
-        help="Extract RGBA palettes from textures/*.png into palettes/*.texture-palettes.json.",
+        help="Extract RGBA palettes from textures/*.png into palettes/*.json.",
     )
     e.add_argument("--textures", default="textures", help="Textures directory.")
     e.add_argument("--palettes", default="palettes", help="Palettes directory.")
@@ -480,11 +524,20 @@ def build_parser() -> argparse.ArgumentParser:
         default=1,
         help="Ignore pixels with alpha < this value.",
     )
+    e.add_argument(
+        "--schema-ref",
+        default="../../schemas/texture-palettes.schema.json",
+        help="Value to write to $schema in created palette files.",
+    )
+    e.add_argument(
+        "--generator-version",
+        default="1.0.0",
+        help="Generator version string to include in output.",
+    )
     e.set_defaults(func=cmd_extract)
 
     r = sub.add_parser(
-        "recolor",
-        help="Recolor textures_input/ using a source->target palette swap into textures_output/.",
+        "recolor", help="Recolor textures_input/ using a source->target palette swap."
     )
     r.add_argument("--palettes", default="palettes", help="Palettes directory.")
     r.add_argument(
@@ -523,6 +576,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Do not preserve original alpha.",
     )
+    r.add_argument(
+        "--no-exact-first",
+        action="store_true",
+        help="Disable exact-match mapping before nearest-color.",
+    )
     r.set_defaults(func=cmd_recolor)
 
     n = sub.add_parser(
@@ -544,6 +602,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         format="%(levelname)s: %(message)s",
     )
 
+    # Make relative paths resolve from repo root when run from tools/ in GUI.
+    # If launched from elsewhere, keep current working directory.
     return int(args.func(args))
 
 
