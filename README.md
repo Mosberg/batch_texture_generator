@@ -22,8 +22,13 @@ python tools/btg.py recolor --src-palette wood/oak.texture-palettes.json --src-i
 
 ## Project Structure
 
-```
+```plaintext
 batch_texture_generator/               # Root directory
+├─ .github/
+│  ├─ REMOTE-INDEX.md                  # Remote index for large codebases
+│  └─ copilot-instructions.md          # GitHub Copilot instructions
+├─ .vscode/
+│  └─ settings.json                    # VSCode settings
 ├─ palettes/                           # JSON palette directory
 │  ├─ glass/
 │  │  └─ glass.texture-palettes.json
@@ -79,5 +84,7 @@ batch_texture_generator/               # Root directory
 │     └─ warped.png
 ├─ textures_input/                     # Texture PNG's which needs recoloring
 ├─ textures_output/                    # Texture PNG's which have been recolored
-└─ tools/                              # Tools to extract *.texture-palettes.json from Material PNG's
+└─ tools/
+   └─ btg.py                           # Main script for batch texture generation
+
 ```

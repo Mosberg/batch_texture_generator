@@ -10,3 +10,7 @@
 - [RGBA Color Format](https://www.w3.org/TR/css-color-4/#rgba-color) - specification for 8-digit RGBA hex color format
 - [GitHub Copilot](https://github.com/features/copilot) - AI pair programmer that helps write code faster
 - [GitHub Copilot Docs](https://docs.github.com/en/copilot) - documentation for GitHub Copilot
+- [Batch Texture Generator Tool](./tools/btg.py) - main script for batch texture generation
+- [Batch Texture Generator README](../README.md) - main documentation for the Batch Texture Generator project
+- [Batch Texture Generator Copilot Instructions](./copilot-instructions.md) - GitHub Copilot instructions for the project
+- [Batch Texture Generator Github Repository](https://github.com/Mosberg/batch_texture_generator) - GitHub repository for the Batch Texture Generator project
