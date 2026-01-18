@@ -1,0 +1,31 @@
+{
+  "schema": "btg-template",
+  "version": 1,
+  "template": {
+    "id": "barrel_block",
+    "path": "textures_input/barrel_block.png"
+  },
+  "output": {
+    "pattern": "{wood}_{metal}_barrel_block.png"
+  },
+  "slots": [
+    {
+      "slot": "wood",
+      "material": "wood",
+      "source": {
+        "palette": "wood/oak.texture-palettes.json",
+        "id": "oak",
+        "group": "base"
+      }
+    },
+    {
+      "slot": "metal",
+      "material": "metal",
+      "source": {
+        "palette": "metal/iron.texture-palettes.json",
+        "id": "iron",
+        "group": "base"
+      }
+    }
+  ]
+}

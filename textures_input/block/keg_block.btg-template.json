@@ -1,0 +1,22 @@
+{
+  "schema": "btg-template",
+  "version": 1,
+  "template": {
+    "id": "keg_block",
+    "path": "textures_input/keg_block.png"
+  },
+  "output": {
+    "pattern": "{metal}_keg_block.png"
+  },
+  "slots": [
+    {
+      "slot": "metal",
+      "material": "metal",
+      "source": {
+        "palette": "metal/iron.texture-palettes.json",
+        "id": "iron",
+        "group": "base"
+      }
+    }
+  ]
+}
