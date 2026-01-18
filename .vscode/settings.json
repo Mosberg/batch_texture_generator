@@ -23,5 +23,25 @@
       "fileMatch": ["palettes/**/*.texture-palettes.json"],
       "url": "./schemas/texture-palettes.schema.json"
     }
+  ],
+
+  // =========================
+  // Copilot Chat: workspace context (project-specific)
+  // =========================
+  "github.copilot.chat.workspace.enableFullWorkspace": true,
+  "github.copilot.chat.workspace.enableCodeSearch": true,
+  "github.copilot.chat.workspace.enableEmbeddingsSearch": true,
+  "github.copilot.chat.workspace.maxLocalIndexSize": 150000,
+
+  // Optional: tuned commit/PR text generation
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    {
+      "text": "Use Conventional Commits. Mention schema version bumps explicitly."
+    }
+  ],
+  "github.copilot.chat.pullRequestDescriptionGeneration.instructions": [
+    {
+      "text": "Include: summary, behavior changes, schema changes, and how to test."
+    }
   ]
 }
