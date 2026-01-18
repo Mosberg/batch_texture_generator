@@ -315,6 +315,37 @@ def recolor_png(
 
 
 # ----------------------------
+# Utility functions
+# ----------------------------
+
+
+def _rel_posix(path: Path, base: Path) -> str:
+    return path.relative_to(base).as_posix()
+
+
+def palette_hit_score(template_colors: set[RGBA], palette: list[RGBA]) -> int:
+    pal_set = set(palette)
+    return sum(1 for c in template_colors if c in pal_set)
+
+
+def infer_output_pattern(template_id: str, slots: list[str]) -> str:
+    # Heuristics tailored to your examples.
+    if template_id == "barrel":
+        return "{wood}_{metal}_barrel.png"
+    if template_id == "keg":
+        return "{metal}_keg.png"
+    if template_id.endswith("_flask"):
+        # big_flask -> big_{wood}_{glass}_flask.png
+        if template_id in ("big_flask", "medium_flask", "small_flask"):
+            size = template_id.split("_", 1)[0]
+            return f"{size}_{{wood}}_{{glass}}_flask.png"
+        return "{wood}_{glass}_" + template_id + ".png"
+
+    # Generic fallback: {wood}_{metal}_{glass}_<template>.png (only the slots that exist)
+    return "_".join("{" + s + "}" for s in slots) + f"_{template_id}.png"
+
+
+# ----------------------------
 # Multi-material recolor (single-pass, N slots)
 # ----------------------------
 
@@ -600,6 +631,99 @@ def cmd_recolor(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_autotemplate(args: argparse.Namespace) -> int:
+    templates_dir = Path(args.templates)
+    palettes_dir = Path(args.palettes)
+    out_dir = Path(args.out_dir) if args.out_dir else templates_dir
+
+    palette_index = load_all_palettes_index(palettes_dir)
+
+    pngs = sorted(templates_dir.glob("*.png"))
+    if not pngs:
+        LOG.warning("No PNG templates found in %s", templates_dir.as_posix())
+        return 0
+
+    written = 0
+    for png in pngs:
+        template_id = png.stem
+
+        img = Image.open(png).convert("RGBA")
+        pixels: list[RGBA] = list(img.getdata())
+        template_colors: set[RGBA] = {p for p in pixels if p[3] >= args.min_alpha}
+
+        slots: list[dict[str, Any]] = []
+        slot_names: list[str] = []
+
+        for material in args.materials.split(","):
+            material = material.strip()
+            if not material:
+                continue
+
+            by_id = palette_index.get(material, {})
+            if not by_id:
+                continue
+
+            best_id = None
+            best_score = 0
+            best_item = None
+            best_path = None
+
+            for pid, (p_path, p_item) in by_id.items():
+                # default_group() prefers "base" when present
+                _, grp = p_item.default_group()
+                score = palette_hit_score(template_colors, grp.colors_rgba())
+                if score > best_score:
+                    best_score = score
+                    best_id = pid
+                    best_item = p_item
+                    best_path = p_path
+
+            if best_id is None or best_score < args.min_hits:
+                continue
+
+            slot_name = material  # "wood"/"metal"/"glass"
+            slot_names.append(slot_name)
+            slots.append(
+                {
+                    "slot": slot_name,
+                    "material": material,
+                    "source": {
+                        "palette": _rel_posix(best_path, palettes_dir),
+                        "id": best_item.id,
+                        "group": "base",
+                    },
+                }
+            )
+
+        if not slots:
+            LOG.warning("No slots detected for %s (try lowering --min-hits).", png.name)
+            continue
+
+        out_pattern = infer_output_pattern(template_id, slot_names)
+
+        data = {
+            "schema": "btg-template",
+            "version": 1,
+            "template": {
+                "id": template_id,
+                "path": str(png.as_posix()).replace("\\", "/"),
+            },
+            "output": {"pattern": out_pattern},
+            "slots": slots,
+        }
+
+        out_path = out_dir / f"{template_id}.btg-template.json"
+        if args.dry_run:
+            LOG.info("[DRY] Would write %s", out_path.as_posix())
+        else:
+            save_json(out_path, data)
+            LOG.info("Wrote %s", out_path.as_posix())
+            written += 1
+
+    LOG.info("Autotemplate complete: wrote %d file(s).", written)
+    return 0
+
+
 def cmd_normalize(args: argparse.Namespace) -> int:
     palettes_dir = Path(args.palettes)
     changed_any = False
@@ -850,6 +974,36 @@ def build_parser() -> argparse.ArgumentParser:
         help="Limit number of generated outputs per run.",
     )
     g.set_defaults(func=cmd_generate)
+
+    a = sub.add_parser(
+        "autotemplate", help="Auto-generate *.btg-template.json from template PNGs."
+    )
+    a.add_argument("--templates", default="textures_input")
+    a.add_argument("--palettes", default="palettes")
+    a.add_argument(
+        "--out-dir",
+        default=None,
+        help="Where to write templates (default: templates dir).",
+    )
+    a.add_argument(
+        "--materials",
+        default="wood,metal,glass",
+        help="Comma list; scan only these materials.",
+    )
+    a.add_argument(
+        "--min-alpha",
+        type=int,
+        default=1,
+        help="Minimum alpha value to consider.",
+    )
+    a.add_argument(
+        "--min-hits",
+        type=int,
+        default=2,
+        help="Minimum exact color hits to accept a material.",
+    )
+    a.add_argument("--dry-run", action="store_true")
+    a.set_defaults(func=cmd_autotemplate)
 
     return p
 
