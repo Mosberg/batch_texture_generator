@@ -1705,6 +1705,8 @@ batch_texture_generator
 │     ├─ pip3.exe
 │     ├─ python.exe
 │     └─ pythonw.exe
+├─ .vscode
+│  └─ settings.json
 ├─ README.md
 ├─ requirements.txt
 └─ textures
