@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import itertools
 import json
 import logging
 from dataclasses import dataclass
@@ -12,6 +11,7 @@ from PIL import Image
 from jsonschema import Draft202012Validator
 
 try:
+    # jsonschema >= 4 uses referencing for robust ref resolution
     from referencing import Registry, Resource
 except Exception:  # pragma: no cover
     Registry = None  # type: ignore[assignment]
@@ -21,6 +21,20 @@ except Exception:  # pragma: no cover
 LOG = logging.getLogger("btg")
 
 RGBA = Tuple[int, int, int, int]
+
+
+# ----------------------------
+# Paths / config
+# ----------------------------
+
+
+def _norm_slash(p: str) -> str:
+    return p.replace("\\", "/")
+
+
+def _repo_root_from_tools_dir(tools_dir: Path) -> Path:
+    # tools/ is expected to live in repo root: <root>/tools/btg.py
+    return tools_dir.parent
 
 
 # ----------------------------
@@ -63,7 +77,7 @@ def color_dist2(a: RGBA, b: RGBA, *, alpha_weight: float = 0.25) -> float:
 
 
 # ----------------------------
-# Palette models
+# Models
 # ----------------------------
 
 
@@ -99,35 +113,6 @@ class PaletteItem:
 
 
 # ----------------------------
-# Template models (multi-material)
-# ----------------------------
-
-
-@dataclass(frozen=True, slots=True)
-class SlotSource:
-    palette: str  # relative to palettes/
-    id: str
-    group: str = "base"
-
-
-@dataclass(frozen=True, slots=True)
-class TemplateSlot:
-    slot: str  # placeholder name used in output pattern: {wood}, {metal}, {glass}
-    material: str  # palette material folder (wood/metal/glass)
-    source: SlotSource
-    include_ids: Optional[List[str]] = None
-    exclude_ids: Optional[List[str]] = None
-
-
-@dataclass(frozen=True, slots=True)
-class TemplateDef:
-    template_id: str
-    template_path: str
-    output_pattern: str
-    slots: List[TemplateSlot]
-
-
-# ----------------------------
 # JSON helpers
 # ----------------------------
 
@@ -155,10 +140,15 @@ def _build_registry(schema_dir: Path) -> Optional["Registry"]:
     reg = Registry()
     for p in schema_dir.rglob("*.schema.json"):
         doc = load_json(p)
+
+        # Register by local file URI so relative $ref works robustly.
         reg = reg.with_resource(p.as_uri(), Resource.from_contents(doc))
+
+        # Also register by $id if present so $id-based refs work.
         sid = doc.get("$id")
         if isinstance(sid, str) and sid:
             reg = reg.with_resource(sid, Resource.from_contents(doc))
+
     return reg
 
 
@@ -192,7 +182,7 @@ def validate_palette_json(palette_path: Path, schema_dir: Path) -> None:
 
 
 # ----------------------------
-# Palette parsing / indexing
+# Palette parsing
 # ----------------------------
 
 
@@ -220,29 +210,48 @@ def parse_palette_file(palette_path: Path) -> List[PaletteItem]:
                 metadata=it.get("metadata"),
             )
         )
+
     return out
 
 
-def load_all_palettes_index(
-    palettes_dir: Path,
-) -> Dict[str, Dict[str, Tuple[Path, PaletteItem]]]:
-    """
-    Returns:
-      material -> id -> (palette_file_path, item)
-    """
-    index: Dict[str, Dict[str, Tuple[Path, PaletteItem]]] = {}
-    for p in sorted(palettes_dir.rglob("*.texture-palettes.json")):
-        try:
-            items = parse_palette_file(p)
-        except Exception:
-            continue
-        for it in items:
-            index.setdefault(it.material, {})[it.id] = (p, it)
-    return index
+# ----------------------------
+# Palette extraction
+# ----------------------------
+
+
+def extract_palette_from_png(
+    png_path: Path,
+    *,
+    max_colors: int = 32,
+    min_alpha: int = 1,
+) -> List[RGBA]:
+
+    img = Image.open(png_path).convert("RGBA")
+    pixels = list(img.getdata())
+
+    uniq = sorted({p for p in pixels if p[3] >= min_alpha})
+    if 0 < len(uniq) <= max_colors:
+        return uniq
+
+    # Deterministic palette approximation for larger/gradient images.
+    q = img.quantize(colors=max_colors, method=Image.Quantize.MEDIANCUT)
+    pal = q.getpalette() or []
+    used = sorted(set(q.getdata()))
+
+    out: List[RGBA] = []
+    for idx in used:
+        r = pal[idx * 3 + 0]
+        g = pal[idx * 3 + 1]
+        b = pal[idx * 3 + 2]
+        a = 255
+        if a >= min_alpha:
+            out.append((r, g, b, a))
+
+    return out[:max_colors]
 
 
 # ----------------------------
-# Core recolor helpers
+# Recolor (palette swap)
 # ----------------------------
 
 
@@ -315,166 +324,30 @@ def recolor_png(
 
 
 # ----------------------------
-# Multi-material recolor (single-pass, N slots)
+# Normalize palettes to RGBA
 # ----------------------------
 
 
-def _classify_pixels_for_slots(
-    pixels: List[RGBA],
-    slot_src_palettes: List[List[RGBA]],
-    *,
-    alpha_weight: float,
-    min_alpha: int,
-    exact_first: bool,
-) -> Dict[RGBA, Tuple[int, int]]:
-    """
-    For each unique pixel RGBA (>= min_alpha), decide:
-      - which slot it belongs to
-      - which source palette index it best matches
-    Returns: pixel -> (slot_index, src_color_index)
-    """
-    exact_lookup: Dict[RGBA, Tuple[int, int]] = {}
-    if exact_first:
-        for si, pal in enumerate(slot_src_palettes):
-            for ci, c in enumerate(pal):
-                exact_lookup.setdefault(c, (si, ci))
-
-    uniq = {p for p in pixels if p[3] >= min_alpha}
-    mapping: Dict[RGBA, Tuple[int, int]] = {}
-
-    for p in uniq:
-        m = exact_lookup.get(p)
-        if m is not None:
-            mapping[p] = m
-            continue
-
-        best_slot = 0
-        best_idx = 0
-        best_d = float("inf")
-
-        for si, pal in enumerate(slot_src_palettes):
-            for ci, c in enumerate(pal):
-                d = color_dist2(p, c, alpha_weight=alpha_weight)
-                if d < best_d:
-                    best_d = d
-                    best_slot = si
-                    best_idx = ci
-
-        mapping[p] = (best_slot, best_idx)
-
-    return mapping
-
-
-def recolor_png_multi(
-    input_png: Path,
-    output_png: Path,
-    *,
-    slot_src_palettes: List[List[RGBA]],
-    slot_dst_palettes: List[List[RGBA]],
-    alpha_weight: float = 0.25,
-    preserve_alpha: bool = True,
-    min_alpha: int = 1,
-    exact_first: bool = True,
-) -> None:
-    if len(slot_src_palettes) != len(slot_dst_palettes):
-        raise ValueError("slot_src_palettes and slot_dst_palettes must be same length")
-
-    img = Image.open(input_png).convert("RGBA")
-    pixels: List[RGBA] = list(img.getdata())
-
-    pixel_class = _classify_pixels_for_slots(
-        pixels,
-        slot_src_palettes,
-        alpha_weight=alpha_weight,
-        min_alpha=min_alpha,
-        exact_first=exact_first,
-    )
-
-    slot_dst_by_src: List[List[RGBA]] = [
-        build_index_map(src, dst)
-        for src, dst in zip(slot_src_palettes, slot_dst_palettes, strict=True)
-    ]
-
-    out: List[RGBA] = []
-    for p in pixels:
-        if p[3] < min_alpha:
-            out.append(p)
-            continue
-
-        si, ci = pixel_class[p]
-        dst = slot_dst_by_src[si][ci]
-        if preserve_alpha:
-            dst = (dst[0], dst[1], dst[2], p[3])
-        out.append(dst)
-
-    img.putdata(out)
-    output_png.parent.mkdir(parents=True, exist_ok=True)
-    img.save(output_png)
-
-
-# ----------------------------
-# Template parsing
-# ----------------------------
-
-
-def load_template_def(path: Path) -> TemplateDef:
+def normalize_palette_json(path: Path) -> bool:
     raw = load_json(path)
-    if raw.get("schema") != "btg-template":
-        raise ValueError(f"{path}: schema must be 'btg-template'")
-    if int(raw.get("version", 0)) < 1:
-        raise ValueError(f"{path}: version must be >= 1")
+    changed = False
 
-    t = raw.get("template") or {}
-    out = raw.get("output") or {}
-    slots_raw = raw.get("slots") or []
+    for item in raw.get("items", []):
+        groups = item.get("groups") or {}
+        for group in groups.values():
+            cols = group.get("colors") or []
+            new_cols: List[str] = []
+            for c in cols:
+                c2 = hex6_to_hex8(str(c))
+                if c2 != str(c):
+                    changed = True
+                new_cols.append(c2)
+            group["colors"] = new_cols
 
-    slots: List[TemplateSlot] = []
-    for s in slots_raw:
-        src = s.get("source") or {}
-        slots.append(
-            TemplateSlot(
-                slot=str(s["slot"]),
-                material=str(s["material"]),
-                source=SlotSource(
-                    palette=str(src["palette"]),
-                    id=str(src["id"]),
-                    group=str(src.get("group") or "base"),
-                ),
-                include_ids=list(s.get("includeIds") or []) or None,
-                exclude_ids=list(s.get("excludeIds") or []) or None,
-            )
-        )
+    if changed:
+        save_json(path, raw)
 
-    return TemplateDef(
-        template_id=str(t["id"]),
-        template_path=str(t["path"]),
-        output_pattern=str(
-            out.get("pattern") or f"{{{slots[0].slot}}}_{Path(t['path']).stem}.png"
-        ),
-        slots=slots,
-    )
-
-
-def _apply_includes_excludes(
-    ids: List[str], inc: Optional[List[str]], exc: Optional[List[str]]
-) -> List[str]:
-    out = ids
-    if inc:
-        inc_set = set(inc)
-        out = [x for x in out if x in inc_set]
-    if exc:
-        exc_set = set(exc)
-        out = [x for x in out if x not in exc_set]
-    return out
-
-
-def _safe_format_pattern(pattern: str, mapping: Dict[str, str]) -> str:
-    try:
-        return pattern.format(**mapping)
-    except KeyError as e:
-        raise ValueError(
-            f"Pattern '{pattern}' references missing placeholder {e!s}"
-        ) from e
+    return changed
 
 
 # ----------------------------
@@ -524,7 +397,7 @@ def cmd_extract(args: argparse.Namespace) -> int:
                 {
                     "id": item_id,
                     "name": item_id.replace("_", " ").title(),
-                    "path": f"textures/{material}/{png.name}".replace("\\", "/"),
+                    "path": _norm_slash(f"textures/{material}/{png.name}"),
                     "material": material,
                     "groups": {
                         "base": {
@@ -605,144 +478,13 @@ def cmd_normalize(args: argparse.Namespace) -> int:
     changed_any = False
 
     for p in sorted(palettes_dir.rglob("*.texture-palettes.json")):
-        raw = load_json(p)
-        changed = False
-        for item in raw.get("items", []):
-            groups = item.get("groups") or {}
-            for group in groups.values():
-                cols = group.get("colors") or []
-                new_cols = []
-                for c in cols:
-                    c2 = hex6_to_hex8(str(c))
-                    changed |= c2 != str(c)
-                    new_cols.append(c2)
-                group["colors"] = new_cols
-        if changed:
-            save_json(p, raw)
+        if normalize_palette_json(p):
             changed_any = True
             LOG.info("Normalized %s", p.as_posix())
 
     if not changed_any:
         LOG.info("No palette files required normalization.")
-    return 0
 
-
-def cmd_generate(args: argparse.Namespace) -> int:
-    templates_dir = Path(args.templates)
-    palettes_dir = Path(args.palettes)
-    output_dir = Path(args.output)
-
-    palette_index = load_all_palettes_index(palettes_dir)
-
-    template_files = sorted(templates_dir.glob("*.btg-template.json"))
-    if not template_files:
-        LOG.warning("No templates found in %s", templates_dir.as_posix())
-        return 0
-
-    total_written = 0
-
-    for tf in template_files:
-        tdef = load_template_def(tf)
-        template_png = Path(tdef.template_path)
-        if not template_png.exists():
-            # allow relative path from templates_dir
-            template_png = (templates_dir / tdef.template_path).resolve()
-        if not template_png.exists():
-            raise SystemExit(
-                f"Template PNG not found: {tdef.template_path} (from {tf.as_posix()})"
-            )
-
-        # Build slot sources (what’s in the template PNG)
-        slot_src_palettes: List[List[RGBA]] = []
-        slot_choices: List[List[str]] = []
-
-        for slot in tdef.slots:
-            material_map = palette_index.get(slot.material, {})
-            if not material_map:
-                raise SystemExit(
-                    f"No palettes found for material '{slot.material}' under {palettes_dir.as_posix()}"
-                )
-
-            # all possible ids for that material
-            ids = sorted(material_map.keys())
-            ids = _apply_includes_excludes(ids, slot.include_ids, slot.exclude_ids)
-            if not ids:
-                raise SystemExit(
-                    f"After include/exclude, slot '{slot.slot}' has no ids for material '{slot.material}'"
-                )
-
-            # load slot source palette (what exists in the template pixels)
-            src_palette_path = palettes_dir / slot.source.palette
-            src_items = parse_palette_file(src_palette_path)
-            src_item = next((i for i in src_items if i.id == slot.source.id), None)
-            if not src_item:
-                raise SystemExit(
-                    f"Source id '{slot.source.id}' not found in {src_palette_path.as_posix()}"
-                )
-            src_group = src_item.group(slot.source.group)
-            slot_src_palettes.append(src_group.colors_rgba())
-
-            slot_choices.append(ids)
-
-        # Precompute pixel classification once per template (depends only on src palettes)
-        img = Image.open(template_png).convert("RGBA")
-        pixels: List[RGBA] = list(img.getdata())
-        pixel_class = _classify_pixels_for_slots(
-            pixels,
-            slot_src_palettes,
-            alpha_weight=args.alpha_weight,
-            min_alpha=args.min_alpha,
-            exact_first=not args.no_exact_first,
-        )
-
-        # Generate combinations
-        combos = itertools.product(*slot_choices)
-        if args.limit is not None:
-            combos = itertools.islice(combos, int(args.limit))
-
-        for combo in combos:
-            mapping = {tdef.slots[i].slot: combo[i] for i in range(len(combo))}
-            filename = _safe_format_pattern(tdef.output_pattern, mapping)
-
-            out_path = output_dir / filename
-            if args.dry_run:
-                LOG.info("[DRY] %s -> %s", template_png.name, out_path.as_posix())
-                continue
-
-            # Build dst palettes for this combo
-            slot_dst_palettes: List[List[RGBA]] = []
-            for i, dst_id in enumerate(combo):
-                material = tdef.slots[i].material
-                _, dst_item = palette_index[material][dst_id]
-                _, dst_group = dst_item.default_group()
-                slot_dst_palettes.append(dst_group.colors_rgba())
-
-            # Do multi-material recolor using the precomputed pixel_class
-            slot_dst_by_src = [
-                build_index_map(src, dst)
-                for src, dst in zip(slot_src_palettes, slot_dst_palettes, strict=True)
-            ]
-
-            out_pixels: List[RGBA] = []
-            for p in pixels:
-                if p[3] < args.min_alpha:
-                    out_pixels.append(p)
-                    continue
-                si, ci = pixel_class[p]
-                dst = slot_dst_by_src[si][ci]
-                if not args.no_preserve_alpha:
-                    dst = (dst[0], dst[1], dst[2], p[3])
-                out_pixels.append(dst)
-
-            out_img = Image.new("RGBA", img.size)
-            out_img.putdata(out_pixels)
-            out_path.parent.mkdir(parents=True, exist_ok=True)
-            out_img.save(out_path)
-
-            total_written += 1
-            LOG.info("Wrote %s", out_path.as_posix())
-
-    LOG.info("Generate complete: wrote %d file(s).", total_written)
     return 0
 
 
@@ -752,7 +494,10 @@ def cmd_generate(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog="btg", description="Batch Texture Generator.")
+    p = argparse.ArgumentParser(
+        prog="btg",
+        description="Batch Texture Generator (validate/extract/recolor/normalize palettes).",
+    )
     p.add_argument(
         "--log", default="INFO", help="Log level (DEBUG, INFO, WARNING, ERROR)."
     )
@@ -782,18 +527,17 @@ def build_parser() -> argparse.ArgumentParser:
     e.add_argument(
         "--schema-ref",
         default="../../schemas/texture-palettes.schema.json",
-        help="Value to write to $schema.",
+        help="Value to write to $schema in created palette files.",
     )
     e.add_argument(
         "--generator-version",
         default="1.0.0",
-        help="Generator version string for output.",
+        help="Generator version string to include in output.",
     )
     e.set_defaults(func=cmd_extract)
 
     r = sub.add_parser(
-        "recolor",
-        help="Single-material recolor for textures_input/ into textures_output/.",
+        "recolor", help="Recolor textures_input/ using a source->target palette swap."
     )
     r.add_argument("--palettes", default="palettes", help="Palettes directory.")
     r.add_argument(
@@ -809,47 +553,42 @@ def build_parser() -> argparse.ArgumentParser:
     r.add_argument("--src-id", required=True, help="Source item id (e.g. oak).")
     r.add_argument("--dst-id", required=True, help="Target item id (e.g. iron).")
     r.add_argument(
-        "--group", default=None, help="Group id (default: base if present, else first)."
+        "--group",
+        default=None,
+        help="Group id (default: base if present, else first group).",
     )
     r.add_argument("--input", default="textures_input", help="Input directory.")
     r.add_argument("--output", default="textures_output", help="Output directory.")
-    r.add_argument("--min-alpha", type=int, default=1)
-    r.add_argument("--alpha-weight", type=float, default=0.25)
-    r.add_argument("--no-preserve-alpha", action="store_true")
-    r.add_argument("--no-exact-first", action="store_true")
+    r.add_argument(
+        "--min-alpha",
+        type=int,
+        default=1,
+        help="Leave pixels with alpha < this value unchanged.",
+    )
+    r.add_argument(
+        "--alpha-weight",
+        type=float,
+        default=0.25,
+        help="How much alpha affects nearest-color matching.",
+    )
+    r.add_argument(
+        "--no-preserve-alpha",
+        action="store_true",
+        help="Do not preserve original alpha.",
+    )
+    r.add_argument(
+        "--no-exact-first",
+        action="store_true",
+        help="Disable exact-match mapping before nearest-color.",
+    )
     r.set_defaults(func=cmd_recolor)
 
     n = sub.add_parser(
-        "normalize", help="Normalize palettes (#RRGGBB -> #RRGGBBff) and casing."
+        "normalize",
+        help="Upgrade palettes to RGBA hex (#RRGGBBAA) and normalize casing.",
     )
     n.add_argument("--palettes", default="palettes", help="Palettes directory.")
     n.set_defaults(func=cmd_normalize)
-
-    g = sub.add_parser(
-        "generate",
-        help="Generate all combinations for multi-material templates in textures_input/.",
-    )
-    g.add_argument(
-        "--templates",
-        default="textures_input",
-        help="Directory containing *.btg-template.json + PNGs.",
-    )
-    g.add_argument("--palettes", default="palettes", help="Palettes directory.")
-    g.add_argument("--output", default="textures_output", help="Output directory.")
-    g.add_argument("--min-alpha", type=int, default=1)
-    g.add_argument("--alpha-weight", type=float, default=0.25)
-    g.add_argument("--no-preserve-alpha", action="store_true")
-    g.add_argument("--no-exact-first", action="store_true")
-    g.add_argument(
-        "--dry-run", action="store_true", help="List outputs but do not write PNGs."
-    )
-    g.add_argument(
-        "--limit",
-        type=int,
-        default=None,
-        help="Limit number of generated outputs per run.",
-    )
-    g.set_defaults(func=cmd_generate)
 
     return p
 
@@ -863,6 +602,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         format="%(levelname)s: %(message)s",
     )
 
+    # Make relative paths resolve from repo root when run from tools/ in GUI.
+    # If launched from elsewhere, keep current working directory.
     return int(args.func(args))
 
 

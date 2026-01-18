@@ -1,0 +1,26 @@
+{
+  "schema": "btg-template",
+  "version": 1,
+  "template": { "id": "small_flask", "path": "textures_input/small_flask.png" },
+  "output": { "pattern": "small_{wood}_{glass}_flask.png" },
+  "slots": [
+    {
+      "slot": "wood",
+      "material": "wood",
+      "source": {
+        "palette": "wood/oak.texture-palettes.json",
+        "id": "oak",
+        "group": "base"
+      }
+    },
+    {
+      "slot": "glass",
+      "material": "glass",
+      "source": {
+        "palette": "glass/glass.texture-palettes.json",
+        "id": "glass",
+        "group": "base"
+      }
+    }
+  ]
+}
