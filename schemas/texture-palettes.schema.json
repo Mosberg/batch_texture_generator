@@ -2,27 +2,43 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://mosberg.github.io/schemas/textures/texture-palettes.schema.json",
   "title": "Texture Palettes",
-  "description": "Palette/group data used by recolor tooling. Each item defines per-texture palette groups for deterministic palette swapping.",
+  "description": "Palette/group data used by recolor tooling. Each item defines per-texture palette groups for deterministic palette swapping. Colors are 8-digit RGBA hex.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema", "version", "items"],
   "properties": {
     "$schema": {
       "type": "string",
-      "description": "Optional standard JSON Schema pointer for editors."
+      "description": "Optional JSON Schema pointer for editors (recommended for palette JSON files)."
     },
+
     "schema": { "const": "texture-palettes" },
+
     "version": {
       "type": "integer",
       "minimum": 1,
       "description": "Schema/data version for forward-compatible tooling."
     },
+
+    "generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "version": { "$ref": "common.schema.json#/$defs/semver" }
+      },
+      "description": "Optional metadata about the tool that produced this palette file."
+    },
+
     "items": {
       "type": "array",
       "minItems": 1,
-      "items": { "$ref": "#/$defs/paletteItem" }
+      "items": { "$ref": "#/$defs/paletteItem" },
+      "uniqueItemProperties": ["id"]
     }
   },
+
   "$defs": {
     "paletteItem": {
       "type": "object",
@@ -37,8 +53,11 @@
         "groups": {
           "type": "object",
           "minProperties": 1,
+
+          "propertyNames": { "$ref": "common.schema.json#/$defs/groupId" },
+
           "additionalProperties": { "$ref": "#/$defs/paletteGroup" },
-          "description": "Group name -> group definition (e.g. base, trim, veins)."
+          "description": "Group id -> group definition (e.g. base, trim, veins)."
         },
 
         "metadata": {
@@ -57,16 +76,29 @@
           "type": "array",
           "minItems": 1,
           "maxItems": 256,
-          "items": { "$ref": "common.schema.json#/$defs/hexColor" },
-          "description": "Ordered palette. Index mapping is used during recolor."
+          "items": { "$ref": "common.schema.json#/$defs/hex8" },
+          "description": "Ordered palette colors (RGBA). Index mapping is used during recolor."
         },
+
+        "sortHint": {
+          "type": "string",
+          "enum": [
+            "luminance_asc",
+            "luminance_desc",
+            "alpha_asc",
+            "alpha_desc",
+            "none"
+          ],
+          "default": "none",
+          "description": "Optional hint for extraction/sorting tools."
+        },
+
         "comment": {
           "type": "string",
           "description": "Human notes."
         },
-        "metadata": {
-          "$ref": "common.schema.json#/$defs/jsonObject"
-        }
+
+        "metadata": { "$ref": "common.schema.json#/$defs/jsonObject" }
       }
     }
   }

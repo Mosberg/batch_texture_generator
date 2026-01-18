@@ -1,20 +1,23 @@
 {
-  // =========================
-  // PYTHON (project venv: .btg/)
-  // =========================
+  // Python venv
+  "python.defaultInterpreterPath": "${workspaceFolder}\\.btg\\Scripts\\python.exe",
   "code-runner.executorMap": {
-    "python": "\"${workspaceFolder}\\\\.btg\\\\Scripts\\\\python.exe\" -u"
+    "python": "\"${workspaceFolder}\\.btg\\Scripts\\python.exe\" -u"
   },
 
-  "python.defaultInterpreterPath": "${workspaceFolder}\\\\.btg\\\\Scripts\\\\python.exe",
-
+  // Ignore venv noise
   "search.exclude": { "**/.btg": true },
   "files.watcherExclude": { "**/.btg/**": true },
 
+  // JSON Schema mappings (workspace-relative is supported here). [web:58]
   "json.schemas": [
     {
-      "fileMatch": ["schemas/**/*.schema.json"],
-      "url": "https://json-schema.org/draft/2020-12/schema"
+      "fileMatch": ["schemas/common.schema.json"],
+      "url": "./schemas/common.schema.json"
+    },
+    {
+      "fileMatch": ["schemas/texture-palettes.schema.json"],
+      "url": "./schemas/texture-palettes.schema.json"
     },
     {
       "fileMatch": ["palettes/**/*.texture-palettes.json"],
