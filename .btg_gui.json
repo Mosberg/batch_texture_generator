@@ -32,8 +32,8 @@
     "src_id": "oak",
     "dst_id": "iron",
     "group": "",
-    "input": "textures_input",
-    "output": "output/textures/item",
+    "input": "input/modid",
+    "output": "output/modid/textures",
     "no_recursive": false,
     "min_alpha": "1",
     "alpha_weight": "0.25",
@@ -42,7 +42,7 @@
   },
   "legacy_templates": {
     "palettes_dir": "palettes",
-    "templates_dir": "textures_input",
+    "templates_dir": "templates",
     "output_root": "output",
     "namespace": "modid",
     "lang_file": "en_us.json",
@@ -52,7 +52,7 @@
   "generate": {
     "templates": "templates",
     "palettes": "palettes",
-    "output": "output/textures/item",
+    "output": "output/modid/textures/",
     "min_alpha": "1",
     "alpha_weight": "0.25",
     "preserve_alpha": true,
@@ -60,7 +60,7 @@
     "limit": ""
   },
   "autotemplate": {
-    "templates": "textures_input",
+    "templates": "templates/modid",
     "palettes": "palettes",
     "out_dir": "",
     "materials": "wood,metal,glass",

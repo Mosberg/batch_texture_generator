@@ -3,7 +3,7 @@
   "version": 1,
   "template": {
     "id": "small_flask",
-    "path": "input/modid/item/small_flask.png"
+    "path": "templates/modid/item/small_flask.png"
   },
   "output": {
     "pattern": "small_{wood}_{glass}_flask.png"
