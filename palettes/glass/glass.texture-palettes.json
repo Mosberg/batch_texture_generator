@@ -1,18 +1,18 @@
 {
+  "$schema": "../../schemas/texture-palettes.schema.json",
   "schema": "texture-palettes",
+  "version": 1,
   "items": [
     {
-      "path": "textures/glass/glass.png",
       "id": "glass",
       "name": "Glass",
+      "path": "textures/glass/glass.png",
+      "material": "glass",
       "groups": {
-        "glass": [
-          ["#000000"],
-          ["#7baeb7"],
-          ["#8bc1cd"],
-          ["#a8d0d9"],
-          ["#d0eae9"]
-        ]
+        "base": {
+          "comment": "Base palette for vanilla glass-like recolors.",
+          "colors": ["#000000", "#7baeb7", "#8bc1cd", "#a8d0d9", "#d0eae9"]
+        }
       }
     }
   ]

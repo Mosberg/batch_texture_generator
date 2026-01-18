@@ -2,37 +2,23 @@
   // =========================
   // PYTHON (project venv: .btg/)
   // =========================
-  "python.defaultInterpreterPath": "${workspaceFolder}\\\\.btg\\\\Scripts\\\\python.exe",
-
-  // Ensure Code Runner matches the same venv interpreter. [web:51]
   "code-runner.executorMap": {
     "python": "\"${workspaceFolder}\\\\.btg\\\\Scripts\\\\python.exe\" -u"
   },
 
-  // Keep venv out of search results and file watching churn.
-  "search.exclude": {
-    "**/.btg": true
-  },
-  "files.watcherExclude": {
-    "**/.btg/**": true
-  },
+  "python.defaultInterpreterPath": "${workspaceFolder}\\\\.btg\\\\Scripts\\\\python.exe",
 
-  // =========================
-  // JSON SCHEMA (project mappings)
-  // =========================
-  // Map JSON files in this repo to local schemas (relative URL works). [web:86]
-  // Recommended layout:
-  //   <repo>/schemas/*.schema.json
-  //   <repo>/**/*.json   (validated via fileMatch rules)
+  "search.exclude": { "**/.btg": true },
+  "files.watcherExclude": { "**/.btg/**": true },
+
   "json.schemas": [
     {
-      "fileMatch": ["**/*.schema.json"],
+      "fileMatch": ["schemas/**/*.schema.json"],
       "url": "https://json-schema.org/draft/2020-12/schema"
+    },
+    {
+      "fileMatch": ["palettes/**/*.texture-palettes.json"],
+      "url": "./schemas/texture-palettes.schema.json"
     }
-    // Example (uncomment + adjust):
-    // {
-    //   "fileMatch": ["config/**/*.json"],
-    //   "url": "./schemas/config.schema.json"
-    // }
   ]
 }

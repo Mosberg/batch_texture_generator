@@ -1,20 +1,26 @@
 {
+  "$schema": "../../schemas/texture-palettes.schema.json",
   "schema": "texture-palettes",
+  "version": 1,
   "items": [
     {
-      "path": "textures/wood/oak.png",
       "id": "oak",
       "name": "Oak",
+      "path": "textures/wood/oak.png",
+      "material": "wood",
       "groups": {
-        "wood": [
-          ["#67502c"],
-          ["#7e6237"],
-          ["#967441"],
-          ["#9f844d"],
-          ["#af8f55"],
-          ["#b8945f"],
-          ["#c29d62"]
-        ]
+        "base": {
+          "comment": "Oak ramp from darker grain to lighter highlights.",
+          "colors": [
+            "#67502c",
+            "#7e6237",
+            "#967441",
+            "#9f844d",
+            "#af8f55",
+            "#b8945f",
+            "#c29d62"
+          ]
+        }
       }
     }
   ]

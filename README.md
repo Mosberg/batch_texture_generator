@@ -1,3 +1,27 @@
+# Batch Texture Generator
+
+## Usage
+
+# Validate all palette JSON files
+
+```bash
+python tools/btg.py validate
+```
+
+# Extract palettes from textures/_/_.png
+
+```bash
+python tools/btg.py extract --max-colors 32 --method quantize
+```
+
+# Recolor everything in textures_input/ from oak->iron using group "base"
+
+```bash
+python tools/btg.py recolor --src-palette wood/oak.texture-palettes.json --src-id oak --dst-palette metal/iron.texture-palettes.json --dst-id iron
+```
+
+## Project Structure
+
 ```
 batch_texture_generator/               # Root directory
 ├─ palettes/                           # JSON palette directory
