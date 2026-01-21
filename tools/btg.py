@@ -589,7 +589,7 @@ def infer_output_pattern(template_id: str, slots: List[str]) -> str:
     if template_id == "keg":
         return "{metal}_keg.png"
     if template_id.endswith("_flask"):
-        if template_id in ("big_flask", "medium_flask", "small_flask"):
+        if template_id in ("large_flask", "medium_flask", "small_flask"):
             size = template_id.split("_", 1)[0]
             return f"{size}_{{wood}}_{{glass}}_flask.png"
         return "{wood}_{glass}_" + template_id + ".png"
@@ -1918,3 +1918,78 @@ def main(argv: Optional[List[str]] = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+def generate_tab_assets(
+    src: Path = Path("examples/tab"),
+    dst: Path = Path("resources/assets/tab"),
+    namespace: str = "tab",
+) -> None:
+    """
+    Walks the tab/ folder and generates .json files for items, blockstates, and models,
+    matching the format of the attached examples.
+    """
+    for path in sorted(src.rglob("*")):
+        if path.is_dir():
+            continue
+        rel = path.relative_to(src)
+        out_path = dst / rel
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # Items
+        if "items" in rel.parts and path.suffix == ".json":
+            # e.g. items/barrels/oak_iron_barrel.json
+            item_id = rel.with_suffix("").as_posix().split("items/", 1)[1]
+            if "_block" in item_id:
+                # Block item
+                model_path = f"{namespace}:block/{item_id.replace('_block','_block')}"
+            else:
+                model_path = f"{namespace}:item/{item_id}"
+            data = {"model": {"type": "minecraft:model", "model": model_path}}
+            out_path.write_text(
+                json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+            )
+            continue
+
+        # Blockstates
+        if "blockstates" in rel.parts and path.suffix == ".json":
+            # e.g. blockstates/barrels/oak_iron_barrel_block.json
+            block_id = rel.with_suffix("").as_posix().split("blockstates/", 1)[1]
+            model_path = f"{namespace}:block/{block_id}"
+            data = {
+                "variants": {
+                    "normal": {"model": model_path},
+                    "facing=north": {"model": model_path},
+                    "facing=south": {"model": model_path, "y": 180},
+                    "facing=west": {"model": model_path, "y": 270},
+                    "facing=east": {"model": model_path, "y": 90},
+                }
+            }
+            out_path.write_text(
+                json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+            )
+            continue
+
+        # Models (copy as-is)
+        if "models" in rel.parts and path.suffix == ".json":
+            # Copy the model file as-is
+            out_path.write_text(path.read_text(encoding="utf-8"), encoding="utf-8")
+            continue
+
+        # Lang (copy as-is)
+        if "lang" in rel.parts and path.suffix == ".json":
+            out_path.write_text(path.read_text(encoding="utf-8"), encoding="utf-8")
+            continue
+
+        # Other files (textures, etc): copy as-is
+        out_path.write_bytes(path.read_bytes())
+
+
+# Add to your CLI
+if __name__ == "__main__":
+    import sys
+
+    if len(sys.argv) > 1 and sys.argv[1] == "generate-tab-assets":
+        generate_tab_assets()
+        print("Tab assets generated.")
+        sys.exit(0)

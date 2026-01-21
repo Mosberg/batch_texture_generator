@@ -1,0 +1,7 @@
+{
+  "parent": "tab:block/kegs/keg_block",
+  "textures": {
+    "all": "tab:block/kegs/iron_keg_block",
+    "particle": "#all"
+  }
+}

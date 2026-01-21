@@ -1,0 +1,42 @@
+{
+  "comment_smallflasks": "Small Flasks Tab + Items + Blocks",
+  "itemGroup.tab.smallflasks": "Small Flasks",
+
+  "item.tab.flasks.small.small_oak_glass_flask": "Small Oak Glass Flask",
+
+  "overlay.tab.flasks.fluid.small_flask_fluid_overlay": "Small Flask Fluid Overlay",
+
+  "comment_mediumflasks": "Medium Flasks Tab + Items + Blocks",
+  "itemGroup.tab.mediumflasks": "Medium Flasks",
+
+  "item.tab.flasks.medium.medium_oak_glass_flask": "Medium Oak Glass Flask",
+
+  "overlay.tab.flasks.fluid.medium_flask_fluid_overlay": "Medium Flask Fluid Overlay",
+
+  "comment_largeflasks": "Large Flasks Tab + Items + Blocks",
+  "itemGroup.tab.largeflasks": "Large Flasks",
+
+  "item.tab.flasks.large.large_oak_glass_flask": "Large Oak Glass Flask",
+
+  "overlay.tab.flasks.fluid.large_flask_fluid_overlay": "Large Flask Fluid Overlay",
+
+  "comment_barrels": "Barrels Tab + Items + Blocks",
+  "itemGroup.tab.barrels": "Barrels",
+
+  "item.tab.barrels.oak_iron_barrel": "Oak Iron Barrel",
+
+  "block.tab.barrels.oak_iron_barrel": "Oak Iron Barrel",
+
+  "comment_kegs": "Kegs Tab + Items + Blocks",
+  "itemGroup.tab.kegs": "Kegs",
+
+  "item.tab.kegs.iron_keg": "Iron Keg",
+
+  "block.tab.kegs.iron_keg": "Iron Keg",
+
+  "comment_tooltip": "Tooltip texts",
+  "tooltip.tab.fluid.fill": "Fluid: %s mB",
+  "tooltip.tab.fluid.partial": "Fluid: %s / %s mB",
+  "tooltip.tab.fluid.full": "Fluid: %s mB (full)",
+  "tooltip.tab.fluid.empty": "Fluid: (empty)"
+}

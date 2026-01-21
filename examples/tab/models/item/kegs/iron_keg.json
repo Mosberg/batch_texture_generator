@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "modid:item/large_oak_glass_flask"
+    "all": "tab:item/kegs/iron_keg"
   }
 }

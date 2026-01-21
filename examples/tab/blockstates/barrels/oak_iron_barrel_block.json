@@ -1,0 +1,18 @@
+{
+  "variants": {
+    "normal": { "model": "tab:block/barrels/oak_iron_barrel_block" },
+    "facing=north": { "model": "tab:block/barrels/oak_iron_barrel_block" },
+    "facing=south": {
+      "model": "tab:block/barrels/oak_iron_barrel_block",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "tab:block/barrels/oak_iron_barrel_block",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "tab:block/barrels/oak_iron_barrel_block",
+      "y": 90
+    }
+  }
+}

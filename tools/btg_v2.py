@@ -8,8 +8,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
-from PIL import Image
 from jsonschema import Draft202012Validator
+from PIL import Image
 
 try:
     # jsonschema >= 4 can use referencing.Registry for robust $ref resolution
@@ -488,7 +488,7 @@ def infer_output_pattern(template_id: str, slots: List[str]) -> str:
     if template_id == "keg":
         return "{metal}_keg.png"
     if template_id.endswith("_flask"):
-        if template_id in ("big_flask", "medium_flask", "small_flask"):
+        if template_id in ("large_flask", "medium_flask", "small_flask"):
             size = template_id.split("_", 1)[0]
             return f"{size}_{{wood}}_{{glass}}_flask.png"
         return "{wood}_{glass}_" + template_id + ".png"

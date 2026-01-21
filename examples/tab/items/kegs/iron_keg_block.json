@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "modid:item/large_oak_glass_flask"
+    "model": "tab:block/kegs/iron_keg_block"
   }
 }

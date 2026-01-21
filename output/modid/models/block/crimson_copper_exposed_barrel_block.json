@@ -1,6 +1,0 @@
-{
-  "parent": "modid:block/oak_iron_barrel_block",
-  "textures": {
-    "all": "modid:block/crimson_copper_exposed_barrel_block"
-  }
-}
